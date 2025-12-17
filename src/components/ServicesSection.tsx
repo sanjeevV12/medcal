@@ -21,7 +21,7 @@ const services = [
   {
     title: "Emergency Care",
     subtitle: "Critical Conditions",
-    price: "Variable",
+    price: "₹3,897",
     description: "For serious accidents requiring hospitalization",
     features: [
       "Ambulance dispatch",
@@ -76,9 +76,7 @@ const ServicesSection = () => {
                   <div className={`text-3xl font-bold ${service.popular ? 'text-emergency' : 'text-primary'}`}>
                     {service.price}
                   </div>
-                  {service.price !== "Variable" && (
-                    <p className="text-sm text-muted-foreground">per incident</p>
-                  )}
+                <p className="text-sm text-muted-foreground">starting price</p>
                 </div>
               </div>
 
