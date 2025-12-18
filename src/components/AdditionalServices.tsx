@@ -1,5 +1,6 @@
 import { Stethoscope, Pill, Users, Clock, ArrowRight, Video, Home, HeartPulse } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BookingDialog from "./BookingDialog";
 
 const services = [
   {
@@ -9,7 +10,8 @@ const services = [
     features: ["Video & Voice calls", "Chat support", "Prescription guidance", "Follow-up care"],
     cta: "Consult Now",
     highlight: true,
-    badge: "FREE"
+    badge: "FREE",
+    serviceType: "consultation"
   },
   {
     icon: Pill,
@@ -18,7 +20,8 @@ const services = [
     features: ["Same-day delivery", "Genuine medicines", "Discounted prices", "Prescription upload"],
     cta: "Order Medicines",
     highlight: false,
-    badge: "FAST DELIVERY"
+    badge: "FAST DELIVERY",
+    serviceType: "medicine"
   },
   {
     icon: Users,
@@ -27,7 +30,8 @@ const services = [
     features: ["Trained nurses", "Elder care helpers", "Physiotherapists", "24/7 availability"],
     cta: "Book Assistance",
     highlight: false,
-    badge: "HOME CARE"
+    badge: "HOME CARE",
+    serviceType: "assistance"
   },
   {
     icon: HeartPulse,
@@ -36,7 +40,8 @@ const services = [
     features: ["BP monitoring", "Sugar level checks", "ECG at home", "Health reports"],
     cta: "Start Monitoring",
     highlight: false,
-    badge: "PREVENTIVE"
+    badge: "PREVENTIVE",
+    serviceType: "monitoring"
   }
 ];
 
@@ -84,14 +89,16 @@ const AdditionalServices = () => {
                     ))}
                   </div>
 
-                  <Button 
-                    variant={service.highlight ? "default" : "outline"} 
-                    size="sm"
-                    className="group"
-                  >
-                    {service.cta}
-                    <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </Button>
+                  <BookingDialog serviceType={service.serviceType} title={`Book ${service.title}`}>
+                    <Button 
+                      variant={service.highlight ? "default" : "outline"} 
+                      size="sm"
+                      className="group"
+                    >
+                      {service.cta}
+                      <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </BookingDialog>
                 </div>
               </div>
             </div>
@@ -129,8 +136,9 @@ const AdditionalServices = () => {
               variant="secondary" 
               size="lg"
               className="bg-white text-emergency hover:bg-white/90"
+              asChild
             >
-              Call Emergency: 1800-MEDCAL
+              <a href="tel:+917479898265">Call: +91-7479898265</a>
             </Button>
           </div>
         </div>

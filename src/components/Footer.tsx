@@ -55,7 +55,9 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="text-sm text-background/70">Emergency</p>
-                  <p className="font-semibold">108 / 1800-XXX-XXXX</p>
+                  <a href="tel:+917479898265" className="font-semibold hover:text-emergency transition-colors">
+                    +91-7479898265
+                  </a>
                 </div>
               </li>
               <li className="flex items-center gap-3">
@@ -85,9 +87,11 @@ const Footer = () => {
             <p className="text-background/70 mb-6">
               In case of emergency, don't wait. Press the button below or call our emergency hotline.
             </p>
-            <Button variant="emergency" size="lg" className="w-full">
-              <Phone className="w-5 h-5" />
-              Emergency SOS
+            <Button variant="emergency" size="lg" className="w-full" asChild>
+              <a href="tel:+917479898265">
+                <Phone className="w-5 h-5" />
+                Call: +91-7479898265
+              </a>
             </Button>
           </div>
         </div>

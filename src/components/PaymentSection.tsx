@@ -1,26 +1,27 @@
-import { CreditCard, Banknote, Shield, Calendar, CheckCircle, Heart } from "lucide-react";
+import { CreditCard, Banknote, Shield, Calendar, CheckCircle, Heart, Smartphone, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BookingDialog from "./BookingDialog";
 
 const paymentMethods = [
+  {
+    icon: Smartphone,
+    title: "UPI Payment",
+    description: "GPay, PhonePe, Paytm accepted"
+  },
   {
     icon: CreditCard,
     title: "Card Payment",
     description: "Credit/Debit cards accepted"
   },
   {
-    icon: Banknote,
-    title: "UPI & Net Banking",
+    icon: Building2,
+    title: "Net Banking",
     description: "All major banks supported"
   },
   {
     icon: Calendar,
     title: "EMI Available",
     description: "0% interest for 6 months"
-  },
-  {
-    icon: Shield,
-    title: "Health Insurance",
-    description: "Cashless treatment"
   }
 ];
 
@@ -100,13 +101,15 @@ const PaymentSection = () => {
                   <div className="text-4xl font-bold mb-1">₹1,989</div>
                   <p className="text-sm text-primary-foreground/80 mb-4">per month / family</p>
                   
-                  <Button 
-                    variant="secondary" 
-                    size="lg" 
-                    className="w-full bg-white text-primary hover:bg-white/90"
-                  >
-                    Get Insured Today
-                  </Button>
+                  <BookingDialog serviceType="insurance" title="Get Health Insurance">
+                    <Button 
+                      variant="secondary" 
+                      size="lg" 
+                      className="w-full bg-white text-primary hover:bg-white/90"
+                    >
+                      Get Insured Today
+                    </Button>
+                  </BookingDialog>
                   
                   <p className="text-xs text-primary-foreground/60 mt-3">
                     Cancel anytime • No hidden charges
