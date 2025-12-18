@@ -32,12 +32,14 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="ghost" size="sm">
-              <Phone className="w-4 h-4 mr-2" />
-              108
+            <Button variant="ghost" size="sm" asChild>
+              <a href="tel:+917479898265">
+                <Phone className="w-4 h-4 mr-2" />
+                +91-7479898265
+              </a>
             </Button>
-            <Button variant="emergency" size="sm">
-              Emergency SOS
+            <Button variant="emergency" size="sm" asChild>
+              <a href="tel:+917479898265">Emergency SOS</a>
             </Button>
           </div>
 
@@ -64,8 +66,8 @@ const Navbar = () => {
               <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contact
               </a>
-              <Button variant="emergency" className="mt-2">
-                Emergency SOS
+              <Button variant="emergency" className="mt-2" asChild>
+                <a href="tel:+917479898265">Call: +91-7479898265</a>
               </Button>
             </div>
           </div>
