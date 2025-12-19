@@ -14,7 +14,144 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      booking_records: {
+        Row: {
+          address: string | null
+          amount: string | null
+          booking_date: string
+          booking_time: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          payment_method: string | null
+          service_type: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          amount?: string | null
+          booking_date: string
+          booking_time?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          service_type: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          amount?: string | null
+          booking_date?: string
+          booking_time?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          service_type?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      emergency_contacts: {
+        Row: {
+          created_at: string
+          id: string
+          is_primary: boolean | null
+          name: string
+          phone: string
+          relationship: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          name: string
+          phone: string
+          relationship?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          name?: string
+          phone?: string
+          relationship?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      medical_history: {
+        Row: {
+          condition: string
+          created_at: string
+          diagnosis_date: string | null
+          id: string
+          is_ongoing: boolean | null
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          condition: string
+          created_at?: string
+          diagnosis_date?: string | null
+          id?: string
+          is_ongoing?: boolean | null
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          condition?: string
+          created_at?: string
+          diagnosis_date?: string | null
+          id?: string
+          is_ongoing?: boolean | null
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          blood_group: string | null
+          created_at: string
+          date_of_birth: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          blood_group?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          blood_group?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

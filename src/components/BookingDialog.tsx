@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, Clock, User, Phone, MapPin, CheckCircle, CreditCard, Smartphone, Building2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface BookingDialogProps {
   children: React.ReactNode;
@@ -67,7 +68,23 @@ const BookingDialog = ({ children, serviceType, title }: BookingDialogProps) => 
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    // Save booking to database if user is logged in
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from('booking_records').insert({
+        user_id: user.id,
+        service_type: serviceType,
+        booking_date: formData.date || new Date().toISOString().split('T')[0],
+        booking_time: formData.time || null,
+        status: 'pending',
+        payment_method: paymentMethod,
+        amount: getServicePrice(),
+        address: formData.address,
+        notes: formData.notes || null
+      });
+    }
+    
     toast({
       title: "Booking Confirmed! ✅",
       description: `Your ${serviceType} has been booked. We'll contact you at ${formData.phone}`,
