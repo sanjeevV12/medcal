@@ -1,20 +1,29 @@
-import { MapPin, Clock, Ambulance, Phone, Menu, X } from "lucide-react";
+import { Ambulance, Phone, Menu, X, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center">
               <Ambulance className="w-5 h-5 text-primary-foreground" />
             </div>
             <span className="text-xl font-bold text-foreground">Medcal</span>
-          </div>
+          </Link>
 
           <div className="hidden md:flex items-center gap-8">
             <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -38,6 +47,28 @@ const Navbar = () => {
                 +91-7479898265
               </a>
             </Button>
+            
+            {user ? (
+              <>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/dashboard">
+                    <User className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </>
+            ) : (
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/auth">
+                  <User className="w-4 h-4 mr-2" />
+                  Login
+                </Link>
+              </Button>
+            )}
+            
             <Button variant="emergency" size="sm" asChild>
               <a href="tel:+917479898265">Emergency SOS</a>
             </Button>
@@ -66,6 +97,22 @@ const Navbar = () => {
               <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contact
               </a>
+              
+              {user ? (
+                <>
+                  <Link to="/dashboard" className="text-primary font-medium">
+                    My Dashboard
+                  </Link>
+                  <button onClick={handleSignOut} className="text-left text-muted-foreground">
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link to="/auth" className="text-primary font-medium">
+                  Login / Sign Up
+                </Link>
+              )}
+              
               <Button variant="emergency" className="mt-2" asChild>
                 <a href="tel:+917479898265">Call: +91-7479898265</a>
               </Button>
