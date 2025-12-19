@@ -29,6 +29,9 @@ const routePoints: Coordinates[] = [
 const patientLocation = { x: 20, y: 60 };
 const hospitalLocation = { x: 90, y: 15 };
 
+// Bhopal, MP coordinates
+const BHOPAL_COORDS = { lat: 23.2599, lng: 77.4126 };
+
 const LiveTrackingMap = () => {
   const [tracking, setTracking] = useState<TrackingState>({
     status: 'idle',
@@ -238,7 +241,7 @@ const LiveTrackingMap = () => {
                       <span className="text-primary-foreground font-bold text-sm">H+</span>
                     </div>
                     <span className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs font-medium text-foreground whitespace-nowrap bg-card/90 px-2 py-0.5 rounded">
-                      City Hospital
+                      Hamidia Hospital
                     </span>
                   </div>
                 </div>
@@ -375,7 +378,7 @@ const LiveTrackingMap = () => {
                 <div className="space-y-2 mb-4 text-sm">
                   <div className="flex justify-between p-2 bg-secondary/50 rounded-lg">
                     <span className="text-muted-foreground">Vehicle</span>
-                    <span className="font-medium text-foreground">MH-12-AB-1234</span>
+                    <span className="font-medium text-foreground">MP-04-AB-1234</span>
                   </div>
                   <div className="flex justify-between p-2 bg-secondary/50 rounded-lg">
                     <span className="text-muted-foreground">Type</span>
@@ -411,15 +414,19 @@ const LiveTrackingMap = () => {
                 </h4>
                 <div className="font-mono text-sm space-y-2">
                   <div className="flex justify-between p-2 bg-secondary/50 rounded-lg">
+                    <span className="text-muted-foreground">Location</span>
+                    <span className="text-foreground text-xs">Bhopal, MP</span>
+                  </div>
+                  <div className="flex justify-between p-2 bg-secondary/50 rounded-lg">
                     <span className="text-muted-foreground">Ambulance</span>
                     <span className="text-foreground">
-                      {(18.5204 + (ambulancePos.y / 100) * 0.1).toFixed(4)}°N, 
-                      {(73.8567 + (ambulancePos.x / 100) * 0.1).toFixed(4)}°E
+                      {(BHOPAL_COORDS.lat + (ambulancePos.y / 100) * 0.1).toFixed(4)}°N, 
+                      {(BHOPAL_COORDS.lng + (ambulancePos.x / 100) * 0.1).toFixed(4)}°E
                     </span>
                   </div>
                   <div className="flex justify-between p-2 bg-secondary/50 rounded-lg">
                     <span className="text-muted-foreground">Patient</span>
-                    <span className="text-foreground">18.5264°N, 73.8587°E</span>
+                    <span className="text-foreground">{BHOPAL_COORDS.lat.toFixed(4)}°N, {BHOPAL_COORDS.lng.toFixed(4)}°E</span>
                   </div>
                 </div>
               </div>

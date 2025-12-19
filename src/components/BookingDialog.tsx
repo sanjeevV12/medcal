@@ -316,7 +316,14 @@ const BookingDialog = ({ children, serviceType, title }: BookingDialogProps) => 
             {paymentMethod === 'cod' && (
               <div className="bg-accent/10 p-4 rounded-lg">
                 <p className="text-sm text-foreground">
-                  ✨ <strong>0% EMI Available!</strong> Pay in 3, 6, or 12 easy installments.
+                  ✨ <strong>EMI Available!</strong> Pay in easy installments.
+                </p>
+                <ul className="text-xs text-muted-foreground mt-2 space-y-1">
+                  <li>• <strong>6% interest</strong> for 1st month</li>
+                  <li>• <strong>12% interest</strong> from 2nd month onwards</li>
+                  <li>• Available for 3, 6, or 12 month tenures</li>
+                </ul>
+                <p className="text-xs text-muted-foreground mt-2">
                   Our executive will explain payment options during visit.
                 </p>
               </div>
@@ -354,6 +361,10 @@ const BookingDialog = ({ children, serviceType, title }: BookingDialogProps) => 
                 <span className="font-medium text-foreground">{serviceType}</span>
               </div>
               <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Location:</span>
+                <span className="font-medium text-foreground">Bhopal, MP</span>
+              </div>
+              <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Payment:</span>
                 <span className="font-medium text-accent">{paymentMethod === 'cod' ? 'Pay Later (EMI)' : 'Paid'}</span>
               </div>
@@ -361,6 +372,15 @@ const BookingDialog = ({ children, serviceType, title }: BookingDialogProps) => 
                 <span className="text-muted-foreground">Booking ID:</span>
                 <span className="font-medium text-foreground">MED{Date.now().toString().slice(-8)}</span>
               </div>
+              {['medicine', 'assistance', 'monitoring'].includes(serviceType) && (
+                <div className="flex justify-between text-sm pt-2 border-t border-border mt-2">
+                  <span className="text-muted-foreground">GPS Tracking:</span>
+                  <span className="font-medium text-accent flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+                    Enabled
+                  </span>
+                </div>
+              )}
             </div>
             <Button onClick={handleConfirm} className="w-full">
               Done

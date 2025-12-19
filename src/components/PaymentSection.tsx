@@ -21,7 +21,7 @@ const paymentMethods = [
   {
     icon: Calendar,
     title: "EMI Available",
-    description: "0% interest for 6 months"
+    description: "6% interest (1 month), 12% thereafter"
   }
 ];
 
@@ -38,7 +38,7 @@ const PaymentSection = () => {
             Flexible Payment Options
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            We believe everyone deserves quality healthcare. That's why we offer multiple payment options including EMI with 0% interest.
+            We believe everyone deserves quality healthcare. That's why we offer multiple payment options including EMI at 6% interest for the first month, 12% thereafter.
           </p>
         </div>
 
@@ -130,20 +130,21 @@ const PaymentSection = () => {
             
             <div className="grid grid-cols-3 gap-4 mb-4">
               {[
-                { months: 3, amount: "₹1,299" },
-                { months: 6, amount: "₹649" },
-                { months: 12, amount: "₹325" }
+                { months: 3, amount: "₹1,358", interest: "₹61" },
+                { months: 6, amount: "₹712", interest: "₹175" },
+                { months: 12, amount: "₹382", interest: "₹487" }
               ].map((emi, i) => (
                 <div key={i} className="bg-secondary/50 rounded-xl p-4 text-center">
                   <div className="text-sm text-muted-foreground mb-1">{emi.months} Months</div>
                   <div className="text-lg font-bold text-foreground">{emi.amount}</div>
                   <div className="text-xs text-muted-foreground">/month</div>
+                  <div className="text-xs text-primary mt-1">+{emi.interest} interest</div>
                 </div>
               ))}
             </div>
             
             <p className="text-sm text-muted-foreground text-center">
-              *Based on ₹3,897 treatment cost. 0% interest on select bank cards.
+              *Based on ₹3,897 treatment cost. 6% interest for 1st month, 12% thereafter.
             </p>
           </div>
         </div>

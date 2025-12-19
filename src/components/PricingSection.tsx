@@ -1,4 +1,4 @@
-import { Check, Star, Shield, Ambulance, Stethoscope, Pill, Users, HeartPulse } from "lucide-react";
+import { Check, Star, Shield, Ambulance, Stethoscope, Pill, Users, HeartPulse, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BookingDialog from "./BookingDialog";
 
@@ -65,21 +65,24 @@ const additionalServices = [
     name: "Medicine Delivery",
     price: "₹99",
     description: "Same-day delivery",
-    serviceType: "medicine"
+    serviceType: "medicine",
+    hasTracking: true
   },
   {
     icon: Users,
     name: "Medical Assistance",
     price: "₹499/day",
     description: "Nurses & helpers",
-    serviceType: "assistance"
+    serviceType: "assistance",
+    hasTracking: true
   },
   {
     icon: HeartPulse,
     name: "Health Monitoring",
     price: "₹299/visit",
     description: "BP, Sugar, ECG",
-    serviceType: "monitoring"
+    serviceType: "monitoring",
+    hasTracking: true
   }
 ];
 
@@ -164,6 +167,12 @@ const PricingSection = () => {
                   <h4 className="font-semibold text-foreground text-sm">{service.name}</h4>
                   <p className="text-xs text-muted-foreground mb-2">{service.description}</p>
                   <span className="text-primary font-bold">{service.price}</span>
+                  {service.hasTracking && (
+                    <div className="flex items-center justify-center gap-1 mt-2 text-xs text-accent">
+                      <MapPin className="w-3 h-3" />
+                      <span>GPS Tracking</span>
+                    </div>
+                  )}
                 </button>
               </BookingDialog>
             ))}
