@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Check, Ambulance, Store, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BasicCareDialog from "./BasicCareDialog";
 
 const services = [
   {
@@ -38,6 +40,17 @@ const services = [
 ];
 
 const ServicesSection = () => {
+  const [basicCareOpen, setBasicCareOpen] = useState(false);
+
+  const handleServiceClick = (isPopular: boolean) => {
+    if (!isPopular) {
+      setBasicCareOpen(true);
+    } else {
+      // Scroll to live tracking section for emergency ambulance
+      document.getElementById('live-tracking')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section id="services" className="py-20 bg-secondary/30">
       <div className="container mx-auto px-4">
@@ -97,6 +110,7 @@ const ServicesSection = () => {
                 variant={service.buttonVariant}
                 size="lg"
                 className="w-full group"
+                onClick={() => handleServiceClick(service.popular)}
               >
                 {service.popular ? "Request Ambulance" : "Get Basic Care"}
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -105,6 +119,8 @@ const ServicesSection = () => {
           ))}
         </div>
       </div>
+
+      <BasicCareDialog open={basicCareOpen} onOpenChange={setBasicCareOpen} />
     </section>
   );
 };
