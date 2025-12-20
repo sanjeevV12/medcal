@@ -1,4 +1,4 @@
-import { Ambulance, Phone, Menu, X, User, LogOut } from "lucide-react";
+import { Ambulance, Phone, Menu, X, User, LogOut, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
@@ -32,9 +32,10 @@ const Navbar = () => {
             <a href="#services" className="text-muted-foreground hover:text-foreground transition-colors">
               Services
             </a>
-            <a href="#coverage" className="text-muted-foreground hover:text-foreground transition-colors">
-              Coverage
-            </a>
+            <Link to="/hospitals" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+              <Building2 className="w-4 h-4" />
+              Hospitals
+            </Link>
             <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
               Contact
             </a>
@@ -91,9 +92,10 @@ const Navbar = () => {
               <a href="#services" className="text-muted-foreground hover:text-foreground transition-colors">
                 Services
               </a>
-              <a href="#coverage" className="text-muted-foreground hover:text-foreground transition-colors">
-                Coverage
-              </a>
+              <Link to="/hospitals" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                <Building2 className="w-4 h-4" />
+                Hospitals
+              </Link>
               <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contact
               </a>

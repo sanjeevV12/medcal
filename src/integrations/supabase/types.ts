@@ -86,6 +86,57 @@ export type Database = {
         }
         Relationships: []
       }
+      hospitals: {
+        Row: {
+          address: string
+          created_at: string
+          email: string | null
+          emergency_available: boolean | null
+          id: string
+          image_url: string | null
+          is_partner: boolean | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          phone: string | null
+          rating: number | null
+          specializations: string[] | null
+          total_reviews: number | null
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          email?: string | null
+          emergency_available?: boolean | null
+          id?: string
+          image_url?: string | null
+          is_partner?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          phone?: string | null
+          rating?: number | null
+          specializations?: string[] | null
+          total_reviews?: number | null
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          email?: string | null
+          emergency_available?: boolean | null
+          id?: string
+          image_url?: string | null
+          is_partner?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          phone?: string | null
+          rating?: number | null
+          specializations?: string[] | null
+          total_reviews?: number | null
+        }
+        Relationships: []
+      }
       medical_history: {
         Row: {
           condition: string
