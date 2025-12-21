@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { MapPin, Phone, MessageSquare, Clock, Route, Store, X, Navigation } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MapPin, Phone, MessageSquare, Clock, Route, Store, CreditCard, Smartphone, Building2, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-
+import { supabase } from "@/integrations/supabase/client";
 interface Coordinates {
   x: number;
   y: number;
@@ -27,6 +30,8 @@ const routePoints: Coordinates[] = [
 const patientLocation = { x: 20, y: 60 };
 const shopLocation = { x: 60, y: 45 };
 
+type PaymentMethod = 'upi' | 'netbanking' | 'card' | 'cod';
+
 interface BasicCareDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -42,6 +47,16 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
   const [responderPos, setResponderPos] = useState<Coordinates>(routePoints[0]);
   const [currentPointIndex, setCurrentPointIndex] = useState(0);
   const [showPulse, setShowPulse] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [paymentComplete, setPaymentComplete] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('upi');
+  const [paymentDetails, setPaymentDetails] = useState({
+    upiId: '',
+    bank: '',
+    cardNumber: '',
+    cardExpiry: '',
+    cardCvv: ''
+  });
 
   const interpolatePosition = useCallback((start: Coordinates, end: Coordinates, t: number): Coordinates => {
     return {
@@ -57,6 +72,10 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
       setResponderPos(routePoints[0]);
       setCurrentPointIndex(0);
       setShowPulse(false);
+      setShowPayment(false);
+      setPaymentComplete(false);
+      setPaymentMethod('upi');
+      setPaymentDetails({ upiId: '', bank: '', cardNumber: '', cardExpiry: '', cardCvv: '' });
     }
   }, [open]);
 
@@ -154,6 +173,52 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
     setTimeout(() => {
       setTracking(prev => ({ ...prev, status: 'en_route' }));
     }, 3000);
+  };
+
+  const handlePayment = async () => {
+    // Validate payment details
+    if (paymentMethod === 'upi' && !paymentDetails.upiId) {
+      toast({ title: "Enter UPI ID", variant: "destructive" });
+      return;
+    }
+    if (paymentMethod === 'netbanking' && !paymentDetails.bank) {
+      toast({ title: "Select Bank", variant: "destructive" });
+      return;
+    }
+    if (paymentMethod === 'card' && (!paymentDetails.cardNumber || !paymentDetails.cardExpiry || !paymentDetails.cardCvv)) {
+      toast({ title: "Fill card details", variant: "destructive" });
+      return;
+    }
+
+    // Simulate payment processing
+    toast({
+      title: "Processing Payment...",
+      description: "Please wait while we process your payment",
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Save booking to database if user is logged in
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from('booking_records').insert({
+        user_id: user.id,
+        service_type: 'basic_care',
+        booking_date: new Date().toISOString().split('T')[0],
+        booking_time: new Date().toLocaleTimeString(),
+        status: 'completed',
+        payment_method: paymentMethod,
+        amount: '₹499',
+        address: 'Current Location - Bhopal',
+        notes: 'Basic Care Service'
+      });
+    }
+
+    setPaymentComplete(true);
+    toast({
+      title: "Payment Successful! ✅",
+      description: "Thank you for using our Basic Care service",
+    });
   };
 
   const statusColors = {
@@ -399,14 +464,182 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
               </div>
             </div>
 
-            {tracking.status === 'arrived' && (
+            {tracking.status === 'arrived' && !showPayment && !paymentComplete && (
               <Button 
                 variant="default" 
                 className="w-full"
-                onClick={() => onOpenChange(false)}
+                onClick={() => setShowPayment(true)}
               >
-                Done
+                Proceed to Payment - ₹499
               </Button>
+            )}
+
+            {/* Payment Section */}
+            {showPayment && !paymentComplete && (
+              <div className="bg-card rounded-xl p-4 border animate-fade-in space-y-4">
+                <div className="bg-primary/10 p-3 rounded-lg">
+                  <p className="text-sm text-muted-foreground">Amount to Pay</p>
+                  <p className="text-2xl font-bold text-primary">₹499</p>
+                </div>
+
+                <p className="font-medium text-foreground text-sm">Select Payment Method</p>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setPaymentMethod('upi')}
+                    className={`p-3 rounded-xl border-2 transition-all ${
+                      paymentMethod === 'upi' ? 'border-primary bg-primary/10' : 'border-border'
+                    }`}
+                  >
+                    <Smartphone className="w-5 h-5 mx-auto mb-1 text-primary" />
+                    <p className="font-medium text-foreground text-xs">UPI</p>
+                  </button>
+
+                  <button
+                    onClick={() => setPaymentMethod('netbanking')}
+                    className={`p-3 rounded-xl border-2 transition-all ${
+                      paymentMethod === 'netbanking' ? 'border-primary bg-primary/10' : 'border-border'
+                    }`}
+                  >
+                    <Building2 className="w-5 h-5 mx-auto mb-1 text-primary" />
+                    <p className="font-medium text-foreground text-xs">Net Banking</p>
+                  </button>
+
+                  <button
+                    onClick={() => setPaymentMethod('card')}
+                    className={`p-3 rounded-xl border-2 transition-all ${
+                      paymentMethod === 'card' ? 'border-primary bg-primary/10' : 'border-border'
+                    }`}
+                  >
+                    <CreditCard className="w-5 h-5 mx-auto mb-1 text-primary" />
+                    <p className="font-medium text-foreground text-xs">Card</p>
+                  </button>
+
+                  <button
+                    onClick={() => setPaymentMethod('cod')}
+                    className={`p-3 rounded-xl border-2 transition-all ${
+                      paymentMethod === 'cod' ? 'border-primary bg-primary/10' : 'border-border'
+                    }`}
+                  >
+                    <span className="text-lg block mx-auto mb-1">💵</span>
+                    <p className="font-medium text-foreground text-xs">Pay Later</p>
+                  </button>
+                </div>
+
+                {paymentMethod === 'upi' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="upiId" className="text-sm">Enter UPI ID</Label>
+                    <Input
+                      id="upiId"
+                      placeholder="yourname@upi"
+                      value={paymentDetails.upiId}
+                      onChange={(e) => setPaymentDetails(prev => ({ ...prev, upiId: e.target.value }))}
+                    />
+                  </div>
+                )}
+
+                {paymentMethod === 'netbanking' && (
+                  <div className="space-y-2">
+                    <Label className="text-sm">Select Bank</Label>
+                    <Select onValueChange={(value) => setPaymentDetails(prev => ({ ...prev, bank: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose your bank" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sbi">State Bank of India</SelectItem>
+                        <SelectItem value="hdfc">HDFC Bank</SelectItem>
+                        <SelectItem value="icici">ICICI Bank</SelectItem>
+                        <SelectItem value="axis">Axis Bank</SelectItem>
+                        <SelectItem value="pnb">Punjab National Bank</SelectItem>
+                        <SelectItem value="kotak">Kotak Mahindra Bank</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {paymentMethod === 'card' && (
+                  <div className="space-y-2">
+                    <div className="space-y-1">
+                      <Label htmlFor="cardNumber" className="text-sm">Card Number</Label>
+                      <Input
+                        id="cardNumber"
+                        placeholder="1234 5678 9012 3456"
+                        value={paymentDetails.cardNumber}
+                        onChange={(e) => setPaymentDetails(prev => ({ ...prev, cardNumber: e.target.value }))}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label htmlFor="cardExpiry" className="text-sm">Expiry</Label>
+                        <Input
+                          id="cardExpiry"
+                          placeholder="MM/YY"
+                          value={paymentDetails.cardExpiry}
+                          onChange={(e) => setPaymentDetails(prev => ({ ...prev, cardExpiry: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="cardCvv" className="text-sm">CVV</Label>
+                        <Input
+                          id="cardCvv"
+                          type="password"
+                          placeholder="***"
+                          maxLength={4}
+                          value={paymentDetails.cardCvv}
+                          onChange={(e) => setPaymentDetails(prev => ({ ...prev, cardCvv: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {paymentMethod === 'cod' && (
+                  <div className="bg-accent/10 p-3 rounded-lg text-xs">
+                    <p className="text-foreground">
+                      <strong>Pay Later:</strong> Cash payment to responder
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setShowPayment(false)} className="flex-1" size="sm">
+                    Back
+                  </Button>
+                  <Button onClick={handlePayment} className="flex-1" size="sm">
+                    {paymentMethod === 'cod' ? 'Confirm' : 'Pay ₹499'}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Payment Complete */}
+            {paymentComplete && (
+              <div className="bg-card rounded-xl p-4 border animate-fade-in text-center space-y-3">
+                <div className="w-16 h-16 mx-auto bg-accent/20 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-8 h-8 text-accent" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-foreground">Payment Complete!</h4>
+                  <p className="text-sm text-muted-foreground">Thank you for using Basic Care</p>
+                </div>
+                <div className="bg-secondary/50 p-3 rounded-lg text-left space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Amount</span>
+                    <span className="font-medium text-foreground">₹499</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Payment</span>
+                    <span className="font-medium text-accent">{paymentMethod === 'cod' ? 'Cash' : 'Paid'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Booking ID</span>
+                    <span className="font-medium text-foreground">MED{Date.now().toString().slice(-8)}</span>
+                  </div>
+                </div>
+                <Button onClick={() => onOpenChange(false)} className="w-full" size="sm">
+                  Done
+                </Button>
+              </div>
             )}
           </div>
         </div>
