@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MapPin, Phone, MessageSquare, Clock, Route, Store, CreditCard, Smartphone, Building2, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { sendNotification } from "@/hooks/useNotifications";
 interface Coordinates {
   x: number;
   y: number;
@@ -162,11 +163,20 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
       description: "Finding nearest medical shop responder...",
     });
 
-    setTimeout(() => {
+    setTimeout(async () => {
       setTracking(prev => ({ ...prev, status: 'responder_assigned' }));
       toast({
         title: "🏪 Responder Assigned!",
         description: "Amit from MedPlus is on the way",
+      });
+      
+      // Send responder assigned notification
+      await sendNotification({
+        type: 'responder_assigned',
+        phone: '+91XXXXXXXXXX',
+        name: 'User',
+        serviceType: 'Basic Care',
+        responderName: 'Amit from MedPlus'
       });
     }, 1500);
 
@@ -215,6 +225,24 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
     }
 
     setPaymentComplete(true);
+    
+    // Send payment receipt notification
+    await sendNotification({
+      type: 'payment_receipt',
+      phone: '+91XXXXXXXXXX',
+      name: 'User',
+      serviceType: 'Basic Care',
+      amount: '₹499'
+    });
+
+    // Send service complete notification
+    await sendNotification({
+      type: 'service_complete',
+      phone: '+91XXXXXXXXXX',
+      name: 'User',
+      serviceType: 'Basic Care'
+    });
+
     toast({
       title: "Payment Successful! ✅",
       description: "Thank you for using our Basic Care service",

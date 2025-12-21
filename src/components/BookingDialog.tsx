@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, Clock, User, Phone, MapPin, CheckCircle, CreditCard, Smartphone, Building2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { sendNotification } from "@/hooks/useNotifications";
 
 interface BookingDialogProps {
   children: React.ReactNode;
@@ -69,6 +70,8 @@ const BookingDialog = ({ children, serviceType, title }: BookingDialogProps) => 
   };
 
   const handleConfirm = async () => {
+    const bookingId = 'MED' + Date.now().toString().slice(-8);
+    
     // Save booking to database if user is logged in
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
@@ -82,6 +85,26 @@ const BookingDialog = ({ children, serviceType, title }: BookingDialogProps) => 
         amount: getServicePrice(),
         address: formData.address,
         notes: formData.notes || null
+      });
+    }
+
+    // Send booking confirmation SMS
+    await sendNotification({
+      type: 'booking_confirmation',
+      phone: formData.phone,
+      name: formData.name,
+      serviceType: serviceType,
+      bookingId: bookingId
+    });
+
+    // Send payment receipt if paid online
+    if (paymentMethod !== 'cod') {
+      await sendNotification({
+        type: 'payment_receipt',
+        phone: formData.phone,
+        name: formData.name,
+        serviceType: serviceType,
+        amount: getServicePrice()
       });
     }
     
