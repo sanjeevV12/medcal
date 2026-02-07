@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, Phone, MapPin, Navigation, Building2, Clock, AlertCircle } from "lucide-react";
+import { X, Phone, Navigation, Building2, Clock, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { sendNotification } from "@/hooks/useNotifications";
+import EmergencyMap from "./EmergencyMap";
 
 interface Coordinates {
   lat: number;
@@ -31,13 +32,6 @@ interface EmergencyTrackingOverlayProps {
   onClose: () => void;
 }
 
-// Simulated hospitals near user
-const nearbyHospitals: Hospital[] = [
-  { id: '1', name: 'AIIMS Hospital', address: 'Bhopal, MP', distance: 2.1, lat: 23.2599, lng: 77.4126 },
-  { id: '2', name: 'Hamidia Hospital', address: 'Bhopal, MP', distance: 3.5, lat: 23.2650, lng: 77.4200 },
-  { id: '3', name: 'Bansal Hospital', address: 'Bhopal, MP', distance: 4.2, lat: 23.2500, lng: 77.4300 },
-];
-
 const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayProps) => {
   const [tracking, setTracking] = useState<TrackingState>({
     status: 'idle',
@@ -46,14 +40,83 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
     distance: 5.2
   });
   const [userLocation, setUserLocation] = useState<Coordinates>({ lat: 23.2599, lng: 77.4126 });
-  const [ambulanceLocation, setAmbulanceLocation] = useState<Coordinates>({ lat: 23.2800, lng: 77.4500 });
-  const [selectedHospital, setSelectedHospital] = useState<Hospital>(nearbyHospitals[0]);
+  const [ambulanceLocation, setAmbulanceLocation] = useState<Coordinates | null>(null);
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
+  const [isLoadingHospitals, setIsLoadingHospitals] = useState(true);
   const [driverInfo] = useState({
     name: 'Rajesh Kumar',
     phone: '+91-9876543210',
     vehicle: 'MH-12-AB-1234',
     rating: 4.8
   });
+
+  // Calculate distance between two coordinates using Haversine formula
+  const calculateDistance = useCallback((lat1: number, lng1: number, lat2: number, lng2: number): number => {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLng/2) * Math.sin(dLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }, []);
+
+  // Fetch hospitals from database
+  const fetchHospitals = useCallback(async (userLat: number, userLng: number) => {
+    setIsLoadingHospitals(true);
+    try {
+      const { data, error } = await supabase
+        .from('hospitals')
+        .select('*')
+        .eq('emergency_available', true)
+        .limit(10);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        const hospitalsWithDistance = data
+          .filter(h => h.latitude && h.longitude)
+          .map(h => ({
+            id: h.id,
+            name: h.name,
+            address: h.address,
+            lat: Number(h.latitude),
+            lng: Number(h.longitude),
+            distance: calculateDistance(userLat, userLng, Number(h.latitude), Number(h.longitude))
+          }))
+          .sort((a, b) => a.distance - b.distance);
+
+        setHospitals(hospitalsWithDistance);
+        if (hospitalsWithDistance.length > 0 && !selectedHospital) {
+          setSelectedHospital(hospitalsWithDistance[0]);
+        }
+      } else {
+        // Fallback to default hospitals if none in database
+        const defaultHospitals: Hospital[] = [
+          { id: '1', name: 'AIIMS Bhopal', address: 'Saket Nagar, Bhopal', distance: 2.1, lat: 23.2123, lng: 77.4350 },
+          { id: '2', name: 'Hamidia Hospital', address: 'Royal Market, Bhopal', distance: 3.5, lat: 23.2650, lng: 77.4200 },
+          { id: '3', name: 'Bansal Hospital', address: 'Shahpura, Bhopal', distance: 4.2, lat: 23.2010, lng: 77.4420 },
+        ];
+        setHospitals(defaultHospitals);
+        setSelectedHospital(defaultHospitals[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching hospitals:', error);
+      // Use fallback hospitals
+      const defaultHospitals: Hospital[] = [
+        { id: '1', name: 'AIIMS Bhopal', address: 'Saket Nagar, Bhopal', distance: 2.1, lat: 23.2123, lng: 77.4350 },
+        { id: '2', name: 'Hamidia Hospital', address: 'Royal Market, Bhopal', distance: 3.5, lat: 23.2650, lng: 77.4200 },
+        { id: '3', name: 'Bansal Hospital', address: 'Shahpura, Bhopal', distance: 4.2, lat: 23.2010, lng: 77.4420 },
+      ];
+      setHospitals(defaultHospitals);
+      setSelectedHospital(defaultHospitals[0]);
+    } finally {
+      setIsLoadingHospitals(false);
+    }
+  }, [calculateDistance, selectedHospital]);
 
   // Start emergency flow when opened
   useEffect(() => {
@@ -62,7 +125,7 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
     }
   }, [isOpen]);
 
-  // Progress tracking
+  // Progress tracking with ambulance movement simulation
   useEffect(() => {
     if (tracking.status === 'en_route' || tracking.status === 'arriving' || tracking.status === 'at_hospital') {
       const interval = setInterval(() => {
@@ -83,14 +146,14 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
             newStatus = 'at_hospital';
             toast({
               title: "🏥 Heading to Hospital",
-              description: `Taking you to ${selectedHospital.name}`,
+              description: `Taking you to ${selectedHospital?.name || 'the hospital'}`,
             });
           }
           if (newProgress >= 100) {
             newStatus = 'arrived';
             toast({
               title: "✅ Arrived at Hospital!",
-              description: `You've arrived at ${selectedHospital.name}`,
+              description: `You've arrived at ${selectedHospital?.name || 'the hospital'}`,
             });
           }
           
@@ -103,39 +166,55 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
           };
         });
 
-        // Update ambulance position simulation
-        setAmbulanceLocation(prev => ({
-          lat: prev.lat - 0.001,
-          lng: prev.lng - 0.002
-        }));
+        // Simulate ambulance movement towards user
+        setAmbulanceLocation(prev => {
+          if (!prev) return prev;
+          const targetLat = userLocation.lat;
+          const targetLng = userLocation.lng;
+          const step = 0.002;
+          
+          return {
+            lat: prev.lat + (targetLat > prev.lat ? step : -step),
+            lng: prev.lng + (targetLng > prev.lng ? step : -step)
+          };
+        });
       }, 800);
 
       return () => clearInterval(interval);
     }
-  }, [tracking.status, selectedHospital.name]);
+  }, [tracking.status, selectedHospital?.name, userLocation]);
 
   const startEmergencyFlow = async () => {
     setTracking({ status: 'locating', progress: 0, eta: 12, distance: 5.2 });
+    setAmbulanceLocation(null);
     
     // Get user location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          setUserLocation({ lat: userLat, lng: userLng });
+          fetchHospitals(userLat, userLng);
+          
+          toast({
+            title: "📍 Location Detected",
+            description: "Finding nearest available ambulance...",
           });
         },
         () => {
-          // Use default location
-        }
+          // Use default Bhopal location
+          fetchHospitals(23.2599, 77.4126);
+          toast({
+            title: "📍 Using Default Location",
+            description: "Location access denied. Using Bhopal center.",
+          });
+        },
+        { enableHighAccuracy: true, timeout: 5000 }
       );
+    } else {
+      fetchHospitals(23.2599, 77.4126);
     }
-
-    toast({
-      title: "📍 Location Detected",
-      description: "Finding nearest available ambulance...",
-    });
 
     setTimeout(() => {
       setTracking(prev => ({ ...prev, status: 'finding_ambulance' }));
@@ -146,6 +225,12 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
     }, 1500);
 
     setTimeout(async () => {
+      // Set initial ambulance location (offset from user)
+      setAmbulanceLocation({
+        lat: userLocation.lat + 0.03,
+        lng: userLocation.lng + 0.04
+      });
+      
       setTracking(prev => ({ ...prev, status: 'driver_assigned' }));
       toast({
         title: "🚑 Driver Assigned!",
@@ -184,7 +269,16 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
 
   const handleClose = () => {
     setTracking({ status: 'idle', progress: 0, eta: 12, distance: 5.2 });
+    setAmbulanceLocation(null);
     onClose();
+  };
+
+  const handleHospitalSelect = (hospital: Hospital) => {
+    setSelectedHospital(hospital);
+    toast({
+      title: "🏥 Hospital Selected",
+      description: `Destination changed to ${hospital.name}`,
+    });
   };
 
   const statusColors: Record<string, string> = {
@@ -209,6 +303,8 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
     arrived: 'Arrived!'
   };
 
+  const showAmbulance = ['driver_assigned', 'en_route', 'arriving'].includes(tracking.status);
+
   if (!isOpen) return null;
 
   return (
@@ -229,102 +325,27 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
 
       {/* Map Area */}
       <div className="relative h-[45vh] bg-muted overflow-hidden">
-        {/* Simulated Map Grid */}
-        <div className="absolute inset-0 opacity-20">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div key={`h-${i}`} className="absolute w-full h-px bg-border" style={{ top: `${i * 5}%` }} />
-          ))}
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div key={`v-${i}`} className="absolute w-px h-full bg-border" style={{ left: `${i * 5}%` }} />
-          ))}
-        </div>
-
-        {/* Road Network */}
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
-          <path d="M10 50 L90 50" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" opacity="0.3" />
-          <path d="M50 10 L50 90" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" opacity="0.3" />
-          <path d="M20 30 L80 70" stroke="hsl(var(--muted-foreground))" strokeWidth="0.3" opacity="0.3" />
-        </svg>
-
-        {/* Nearby Hospitals */}
-        {nearbyHospitals.map((hospital, index) => (
-          <div
-            key={hospital.id}
-            className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all ${
-              selectedHospital.id === hospital.id ? 'scale-125 z-20' : 'z-10'
-            }`}
-            style={{ 
-              left: `${30 + index * 20}%`, 
-              top: `${25 + index * 15}%` 
-            }}
-            onClick={() => setSelectedHospital(hospital)}
-          >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-              selectedHospital.id === hospital.id ? 'bg-primary shadow-lg' : 'bg-card border border-border'
-            }`}>
-              <Building2 className={`w-5 h-5 ${selectedHospital.id === hospital.id ? 'text-primary-foreground' : 'text-primary'}`} />
-            </div>
-            <div className="absolute top-12 left-1/2 -translate-x-1/2 whitespace-nowrap bg-card px-2 py-1 rounded text-xs shadow-sm border border-border">
-              {hospital.name}
-              <br />
-              <span className="text-muted-foreground">{hospital.distance} km</span>
+        {isLoadingHospitals ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted">
+            <div className="text-center">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-primary" />
+              <p className="text-sm text-muted-foreground">Loading map...</p>
             </div>
           </div>
-        ))}
-
-        {/* User Location */}
-        <div className="absolute left-1/2 top-2/3 transform -translate-x-1/2 -translate-y-1/2 z-30">
-          <div className="relative">
-            <div className="absolute inset-0 w-16 h-16 rounded-full bg-primary/20 animate-ping" />
-            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg">
-              <MapPin className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-primary text-primary-foreground px-2 py-0.5 rounded text-xs font-medium">
-              You
-            </div>
-          </div>
-        </div>
-
-        {/* Ambulance */}
-        {(tracking.status === 'en_route' || tracking.status === 'arriving' || tracking.status === 'driver_assigned') && (
-          <div 
-            className="absolute z-30 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-700"
-            style={{ 
-              left: `${30 + (tracking.progress / 100) * 20}%`, 
-              top: `${30 + (tracking.progress / 100) * 35}%` 
-            }}
-          >
-            <div className="w-12 h-12 rounded-full bg-gradient-emergency flex items-center justify-center shadow-emergency animate-pulse">
-              <span className="text-2xl">🚑</span>
-            </div>
-          </div>
-        )}
-
-        {/* Route Line */}
-        {tracking.status !== 'idle' && tracking.status !== 'locating' && (
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
-            <path 
-              d="M30 30 Q40 50 50 66" 
-              stroke="hsl(var(--emergency))" 
-              strokeWidth="0.8" 
-              fill="none"
-              strokeDasharray="2 1"
-              opacity="0.6"
-            />
-            <path 
-              d="M50 66 Q60 50 70 25" 
-              stroke="hsl(var(--primary))" 
-              strokeWidth="0.8" 
-              fill="none"
-              strokeDasharray="2 1"
-              opacity="0.6"
-            />
-          </svg>
+        ) : (
+          <EmergencyMap
+            userLocation={userLocation}
+            ambulanceLocation={ambulanceLocation}
+            hospitals={hospitals}
+            selectedHospitalId={selectedHospital?.id || null}
+            onHospitalSelect={handleHospitalSelect}
+            showAmbulance={showAmbulance}
+          />
         )}
       </div>
 
       {/* Status & Info */}
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 max-h-[45vh] overflow-y-auto">
         {/* Progress Bar */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -353,10 +374,35 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
           </div>
           <div className="bg-muted/50 rounded-xl p-3 text-center">
             <Building2 className="w-5 h-5 mx-auto mb-1 text-primary" />
-            <div className="text-lg font-bold truncate">{selectedHospital.name.split(' ')[0]}</div>
+            <div className="text-lg font-bold truncate">{selectedHospital?.name?.split(' ')[0] || 'N/A'}</div>
             <div className="text-xs text-muted-foreground">Hospital</div>
           </div>
         </div>
+
+        {/* Nearby Hospitals List */}
+        {hospitals.length > 0 && (
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground">Nearby Hospitals</h3>
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {hospitals.slice(0, 5).map((hospital) => (
+                <button
+                  key={hospital.id}
+                  onClick={() => handleHospitalSelect(hospital)}
+                  className={`flex-shrink-0 px-3 py-2 rounded-lg border text-left transition-all ${
+                    selectedHospital?.id === hospital.id
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-card border-border hover:border-primary/50'
+                  }`}
+                >
+                  <div className="text-xs font-medium truncate max-w-[120px]">{hospital.name}</div>
+                  <div className={`text-xs ${selectedHospital?.id === hospital.id ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
+                    {hospital.distance.toFixed(1)} km
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Driver Info */}
         {(tracking.status === 'driver_assigned' || tracking.status === 'en_route' || tracking.status === 'arriving') && (
@@ -389,7 +435,7 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
           <div className="bg-success/10 border border-success/30 rounded-xl p-4 text-center">
             <div className="text-4xl mb-2">✅</div>
             <h3 className="font-bold text-success">Arrived at Hospital</h3>
-            <p className="text-sm text-muted-foreground mt-1">{selectedHospital.name}</p>
+            <p className="text-sm text-muted-foreground mt-1">{selectedHospital?.name}</p>
             <Button variant="default" className="mt-4 w-full" onClick={handleClose}>
               Close
             </Button>
