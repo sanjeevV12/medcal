@@ -346,17 +346,48 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
 
       {/* Status & Info */}
       <div className="p-4 space-y-4 max-h-[45vh] overflow-y-auto">
-        {/* Progress Bar */}
+        {/* Progress Bar with Animation */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span className="font-medium">Progress</span>
             <span className="text-muted-foreground">{Math.round(tracking.progress)}%</span>
           </div>
-          <div className="h-2 bg-muted rounded-full overflow-hidden">
+          <div className="h-3 bg-muted rounded-full overflow-hidden relative">
             <div 
-              className={`h-full ${statusColors[tracking.status]} transition-all duration-500`}
+              className={`h-full ${statusColors[tracking.status]} transition-all duration-500 relative`}
               style={{ width: `${tracking.progress}%` }}
-            />
+            >
+              {/* Animated shimmer effect */}
+              {tracking.status !== 'arrived' && tracking.status !== 'idle' && (
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_1.5s_infinite]" />
+              )}
+            </div>
+            {/* Ambulance icon on progress bar */}
+            {tracking.status !== 'idle' && tracking.status !== 'arrived' && (
+              <div 
+                className="absolute top-1/2 -translate-y-1/2 transition-all duration-500"
+                style={{ left: `calc(${Math.min(tracking.progress, 97)}% - 12px)` }}
+              >
+                <span className="text-lg animate-bounce">🚑</span>
+              </div>
+            )}
+          </div>
+          {/* Status label */}
+          <div className="flex items-center justify-center gap-2 text-xs">
+            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${
+              tracking.status === 'at_hospital' 
+                ? 'bg-success/20 text-success' 
+                : tracking.status === 'arriving' 
+                  ? 'bg-primary/20 text-primary'
+                  : 'bg-muted text-muted-foreground'
+            }`}>
+              {tracking.status === 'at_hospital' && '🏥 Heading to Hospital'}
+              {tracking.status === 'arriving' && '📍 Almost at your location'}
+              {tracking.status === 'en_route' && '🚗 Driver en route'}
+              {tracking.status === 'driver_assigned' && '✅ Driver assigned'}
+              {tracking.status === 'finding_ambulance' && '🔍 Finding ambulance'}
+              {tracking.status === 'locating' && '📡 Detecting location'}
+            </span>
           </div>
         </div>
 
