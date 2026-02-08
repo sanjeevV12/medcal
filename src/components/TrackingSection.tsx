@@ -1,28 +1,6 @@
-import { useState } from "react";
-import { MapPin, Navigation, Clock, AlertTriangle, CheckCircle, Radio, Phone } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MapPin, Navigation, AlertTriangle, Radio } from "lucide-react";
 
 const TrackingSection = () => {
-  const [trackingStatus, setTrackingStatus] = useState<'idle' | 'detecting' | 'dispatched' | 'enroute' | 'arrived'>('idle');
-  const [showDriverConfirm, setShowDriverConfirm] = useState(false);
-
-  const handleEmergency = () => {
-    setTrackingStatus('detecting');
-    setTimeout(() => setTrackingStatus('dispatched'), 1500);
-    setTimeout(() => {
-      setShowDriverConfirm(true);
-      setTrackingStatus('enroute');
-    }, 3000);
-  };
-
-  const statusMessages = {
-    idle: "Ready to assist",
-    detecting: "Detecting your location...",
-    dispatched: "Ambulance dispatched!",
-    enroute: "Driver confirmed - En route to you",
-    arrived: "Ambulance arrived at location"
-  };
-
   return (
     <section id="tracking" className="py-20 bg-gradient-to-b from-background to-secondary/20">
       <div className="container mx-auto px-4">
@@ -59,7 +37,7 @@ const TrackingSection = () => {
 
                 {/* Patient Location */}
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <div className={`relative ${trackingStatus !== 'idle' ? 'animate-pulse' : ''}`}>
+                  <div className="relative">
                     <div className="w-16 h-16 bg-emergency/20 rounded-full absolute -inset-4 animate-ping" />
                     <div className="w-8 h-8 bg-emergency rounded-full flex items-center justify-center relative z-10">
                       <MapPin className="w-5 h-5 text-emergency-foreground" />
@@ -80,23 +58,15 @@ const TrackingSection = () => {
                   </span>
                 </div>
 
-                {/* Ambulance (animated) */}
-                {trackingStatus !== 'idle' && trackingStatus !== 'detecting' && (
-                  <div 
-                    className={`absolute transition-all duration-1000 ${
-                      trackingStatus === 'arrived' 
-                        ? 'top-1/2 left-1/2 transform -translate-x-full -translate-y-1/2' 
-                        : 'top-1/4 right-1/3'
-                    }`}
-                  >
-                    <div className="w-10 h-10 bg-emergency rounded-lg flex items-center justify-center animate-bounce">
-                      <span className="text-emergency-foreground text-lg">🚑</span>
-                    </div>
-                    <span className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs text-foreground font-medium whitespace-nowrap">
-                      Ambulance
-                    </span>
+                {/* Animated Ambulance */}
+                <div className="absolute top-1/4 right-1/3 animate-pulse">
+                  <div className="w-10 h-10 bg-emergency rounded-lg flex items-center justify-center animate-bounce">
+                    <span className="text-emergency-foreground text-lg">🚑</span>
                   </div>
-                )}
+                  <span className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs text-foreground font-medium whitespace-nowrap">
+                    Ambulance
+                  </span>
+                </div>
 
                 {/* Medical Shop */}
                 <div className="absolute bottom-1/4 left-1/4">
@@ -112,18 +82,12 @@ const TrackingSection = () => {
               {/* Status Bar */}
               <div className="mt-6 flex items-center justify-between p-4 bg-secondary/50 rounded-xl">
                 <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${
-                    trackingStatus === 'idle' ? 'bg-muted-foreground' :
-                    trackingStatus === 'arrived' ? 'bg-accent' : 'bg-emergency animate-pulse'
-                  }`} />
-                  <span className="font-medium text-foreground">{statusMessages[trackingStatus]}</span>
+                  <div className="w-3 h-3 rounded-full bg-primary animate-pulse" />
+                  <span className="font-medium text-foreground">Ready to assist</span>
                 </div>
-                {trackingStatus !== 'idle' && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="w-4 h-4" />
-                    <span>ETA: 8 mins</span>
-                  </div>
-                )}
+                <div className="text-sm text-muted-foreground">
+                  Press Emergency Alert to begin
+                </div>
               </div>
             </div>
           </div>
@@ -136,7 +100,7 @@ const TrackingSection = () => {
                 Emergency Response System
               </h3>
               
-              <div className="space-y-4 mb-6">
+              <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <Radio className="w-4 h-4 text-primary" />
@@ -167,52 +131,7 @@ const TrackingSection = () => {
                   </div>
                 </div>
               </div>
-
-              <Button 
-                variant="emergency" 
-                size="lg" 
-                className="w-full"
-                onClick={handleEmergency}
-                disabled={trackingStatus !== 'idle'}
-              >
-                {trackingStatus === 'idle' ? 'Simulate Emergency Alert' : 'Emergency Active'}
-              </Button>
             </div>
-
-            {/* Driver Confirmation Card */}
-            {showDriverConfirm && (
-              <div className="bg-card rounded-2xl p-6 shadow-card border-2 border-accent animate-fade-in">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-14 h-14 rounded-full bg-accent/20 flex items-center justify-center">
-                    <CheckCircle className="w-8 h-8 text-accent" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-foreground">Driver Confirmed!</h4>
-                    <p className="text-sm text-muted-foreground">Rajesh Kumar • 4.9 ★</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-2 mb-4 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Vehicle</span>
-                    <span className="text-foreground font-medium">MH-12-AB-1234</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Distance</span>
-                    <span className="text-foreground font-medium">2.5 km away</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Status</span>
-                    <span className="text-accent font-medium">En Route</span>
-                  </div>
-                </div>
-
-                <Button variant="outline" size="sm" className="w-full gap-2">
-                  <Phone className="w-4 h-4" />
-                  Call Driver
-                </Button>
-              </div>
-            )}
           </div>
         </div>
       </div>
