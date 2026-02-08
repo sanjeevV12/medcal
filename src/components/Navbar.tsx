@@ -22,7 +22,7 @@ const Navbar = () => {
             <div className="w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center">
               <Ambulance className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-foreground">Medcal</span>
+            <span className="text-xl font-bold text-foreground">mASSI</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">

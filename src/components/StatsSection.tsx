@@ -36,7 +36,7 @@ const StatsSection = () => {
             Trusted Across India
           </h2>
           <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-            Medcal is revolutionizing emergency medical response with cutting-edge technology and dedicated healthcare professionals.
+            mASSI is revolutionizing emergency medical response with cutting-edge technology and dedicated healthcare professionals.
           </p>
         </div>
 

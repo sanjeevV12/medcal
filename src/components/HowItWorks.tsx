@@ -31,7 +31,7 @@ const HowItWorks = () => {
             <span className="text-sm font-medium text-primary">12-Minute Promise</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            How Medcal Works
+            How mASSI Works
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Our streamlined emergency response system ensures you get medical help faster than ever before.
