@@ -73,7 +73,7 @@ const Auth = () => {
           toast({ title: 'Signup Failed', description: error.message, variant: 'destructive' });
         }
       } else {
-        toast({ title: 'Account Created!', description: 'Welcome to Medcal' });
+        toast({ title: 'Account Created!', description: 'Welcome to mASSI' });
         navigate('/dashboard');
       }
     }
@@ -104,7 +104,7 @@ const Auth = () => {
                 {isLogin ? 'Welcome Back' : 'Create Account'}
               </h1>
               <p className="text-muted-foreground mt-2">
-                {isLogin ? 'Login to access your health records' : 'Join Medcal for better healthcare'}
+                {isLogin ? 'Login to access your health records' : 'Join mASSI for better healthcare'}
               </p>
             </div>
 

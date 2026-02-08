@@ -25,7 +25,7 @@ const HeroSection = () => {
             </h1>
 
             <p className="text-lg text-primary-foreground/80 mb-8 max-w-xl mx-auto lg:mx-0">
-              Medcal detects accident locations instantly and delivers emergency medical care within 12 minutes. 
+              mASSI detects accident locations instantly and delivers emergency medical care within 12 minutes. 
               From first aid at ₹499 to full ambulance service – we've got you covered.
             </p>
 

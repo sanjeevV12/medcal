@@ -5,7 +5,7 @@ const testimonials = [
     name: "Dr. Priya Sharma",
     role: "Emergency Physician",
     image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face",
-    quote: "Medcal has revolutionized emergency response. The 12-minute guarantee saves countless lives. I've seen patients arrive stabilized because treatment began in the ambulance.",
+    quote: "mASSI has revolutionized emergency response. The 12-minute guarantee saves countless lives. I've seen patients arrive stabilized because treatment began in the ambulance.",
     rating: 5,
     category: "doctor"
   },
@@ -13,7 +13,7 @@ const testimonials = [
     name: "Amit Patel",
     role: "Ambulance Driver - 500+ Rescues",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    quote: "The real-time navigation and hospital coordination helps me reach patients faster. Every second counts, and Medcal's system ensures we never waste time.",
+    quote: "The real-time navigation and hospital coordination helps me reach patients faster. Every second counts, and mASSI's system ensures we never waste time.",
     rating: 5,
     category: "driver"
   },
@@ -21,7 +21,7 @@ const testimonials = [
     name: "Sunita Devi",
     role: "Accident Survivor",
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-    quote: "After my accident, Medcal reached me in just 9 minutes. The EMI option meant I didn't have to worry about money during recovery. They truly saved my life.",
+    quote: "After my accident, mASSI reached me in just 9 minutes. The EMI option meant I didn't have to worry about money during recovery. They truly saved my life.",
     rating: 5,
     category: "patient"
   },
@@ -29,7 +29,7 @@ const testimonials = [
     name: "Dr. Rajesh Kumar",
     role: "Paramedic Team Lead",
     image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face",
-    quote: "Our team is equipped with advanced life support equipment. Medcal's platform coordinates everything - from dispatch to hospital admission. It's seamless.",
+    quote: "Our team is equipped with advanced life support equipment. mASSI's platform coordinates everything - from dispatch to hospital admission. It's seamless.",
     rating: 5,
     category: "team"
   },
@@ -37,7 +37,7 @@ const testimonials = [
     name: "Meera Krishnan",
     role: "Mother of Accident Victim",
     image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face",
-    quote: "When my son had an accident, I was panicked. Medcal's team was calm, professional, and incredibly fast. The health insurance plan covers our family now.",
+    quote: "When my son had an accident, I was panicked. mASSI's team was calm, professional, and incredibly fast. The health insurance plan covers our family now.",
     rating: 5,
     category: "patient"
   },
@@ -45,7 +45,7 @@ const testimonials = [
     name: "Vikram Singh",
     role: "Senior Nurse",
     image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face",
-    quote: "The medical assistance program - providing nurses and helpers at home - has helped so many patients recover faster. Medcal thinks beyond just emergencies.",
+    quote: "The medical assistance program - providing nurses and helpers at home - has helped so many patients recover faster. mASSI thinks beyond just emergencies.",
     rating: 5,
     category: "team"
   }
@@ -74,7 +74,7 @@ const TestimonialsSection = () => {
             Heroes & Lives Saved
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Real stories from doctors, drivers, team members, and patients whose lives have been touched by Medcal's 12-minute promise.
+            Real stories from doctors, drivers, team members, and patients whose lives have been touched by mASSI's 12-minute promise.
           </p>
         </div>
 
