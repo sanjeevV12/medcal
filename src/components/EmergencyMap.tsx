@@ -114,7 +114,7 @@ const EmergencyMap = ({
         .bindPopup("<b>Your Location</b>");
     }
 
-    mapRef.current.setView([userLocation.lat, userLocation.lng], 14);
+    mapRef.current.panTo([userLocation.lat, userLocation.lng], { animate: true, duration: 0.5 });
   }, [userLocation]);
 
   // Update ambulance marker
@@ -231,11 +231,11 @@ const EmergencyMap = ({
           opacity: 0.8,
           dashArray: "12, 8"
         }).addTo(mapRef.current);
-      }
 
-      // Fit map to show ambulance and hospital
-      const bounds = L.latLngBounds(routePoints);
-      mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+        // Only fit bounds once when route first appears
+        const bounds = L.latLngBounds(routePoints);
+        mapRef.current.fitBounds(bounds, { padding: [50, 50], animate: true });
+      }
     } else {
       if (markersRef.current.hospitalRoute) {
         markersRef.current.hospitalRoute.remove();

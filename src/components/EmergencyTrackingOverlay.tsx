@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { X, Phone, Navigation, Building2, Clock, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -40,6 +40,7 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
     distance: 5.2
   });
   const [userLocation, setUserLocation] = useState<Coordinates>({ lat: 23.2599, lng: 77.4126 });
+  const trackingStatusRef = useRef<string>('idle');
   const [ambulanceLocation, setAmbulanceLocation] = useState<Coordinates | null>(null);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
@@ -125,6 +126,11 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
     }
   }, [isOpen]);
 
+  // Keep ref in sync
+  useEffect(() => {
+    trackingStatusRef.current = tracking.status;
+  }, [tracking.status]);
+
   // Progress tracking with ambulance movement simulation
   useEffect(() => {
     if (tracking.status === 'en_route' || tracking.status === 'arriving' || tracking.status === 'at_hospital') {
@@ -137,26 +143,27 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
           let newStatus = prev.status;
           if (newProgress >= 50 && prev.status === 'en_route') {
             newStatus = 'arriving';
-            toast({
+            setTimeout(() => toast({
               title: "🚑 Ambulance Nearby!",
               description: "The ambulance is approaching your location",
-            });
+            }), 0);
           }
           if (newProgress >= 75 && prev.status === 'arriving') {
             newStatus = 'at_hospital';
-            toast({
+            setTimeout(() => toast({
               title: "🏥 Heading to Hospital",
               description: `Taking you to ${selectedHospital?.name || 'the hospital'}`,
-            });
+            }), 0);
           }
           if (newProgress >= 100) {
             newStatus = 'arrived';
-            toast({
+            setTimeout(() => toast({
               title: "✅ Arrived at Hospital!",
               description: `You've arrived at ${selectedHospital?.name || 'the hospital'}`,
-            });
+            }), 0);
           }
           
+          trackingStatusRef.current = newStatus;
           return {
             ...prev,
             progress: newProgress,
@@ -166,46 +173,33 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
           };
         });
 
-        // Simulate ambulance movement
+        // Simulate ambulance movement using ref for current status
         setAmbulanceLocation(prev => {
           if (!prev) return prev;
           const step = 0.002;
+          const currentStatus = trackingStatusRef.current;
 
-          setTracking(currentTracking => {
-            // During at_hospital phase, move toward the selected hospital
-            if (currentTracking.status === 'at_hospital' && selectedHospital) {
-              const targetLat = selectedHospital.lat;
-              const targetLng = selectedHospital.lng;
-              setAmbulanceLocation(ambPrev => {
-                if (!ambPrev) return ambPrev;
-                const dLat = targetLat - ambPrev.lat;
-                const dLng = targetLng - ambPrev.lng;
-                if (Math.abs(dLat) < 0.001 && Math.abs(dLng) < 0.001) return ambPrev;
-                return {
-                  lat: ambPrev.lat + (dLat > 0 ? step : -step),
-                  lng: ambPrev.lng + (dLng > 0 ? step : -step)
-                };
-              });
-            }
-            return currentTracking;
-          });
-
-          // Default: move toward user location (en_route / arriving phases)
-          if (tracking.status !== 'at_hospital') {
-            const targetLat = userLocation.lat;
-            const targetLng = userLocation.lng;
+          if (currentStatus === 'at_hospital' && selectedHospital) {
+            const dLat = selectedHospital.lat - prev.lat;
+            const dLng = selectedHospital.lng - prev.lng;
+            if (Math.abs(dLat) < 0.001 && Math.abs(dLng) < 0.001) return prev;
             return {
-              lat: prev.lat + (targetLat > prev.lat ? step : -step),
-              lng: prev.lng + (targetLng > prev.lng ? step : -step)
+              lat: prev.lat + (dLat > 0 ? step : -step),
+              lng: prev.lng + (dLng > 0 ? step : -step)
             };
           }
-          return prev;
+
+          // Move toward user location
+          return {
+            lat: prev.lat + (userLocation.lat > prev.lat ? step : -step),
+            lng: prev.lng + (userLocation.lng > prev.lng ? step : -step)
+          };
         });
       }, 800);
 
       return () => clearInterval(interval);
     }
-  }, [tracking.status, selectedHospital?.name, userLocation]);
+  }, [tracking.status, selectedHospital, userLocation]);
 
   const startEmergencyFlow = async () => {
     setTracking({ status: 'locating', progress: 0, eta: 12, distance: 5.2 });
