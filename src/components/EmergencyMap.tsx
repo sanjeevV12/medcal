@@ -23,6 +23,8 @@ interface EmergencyMapProps {
   selectedHospitalId: string | null;
   onHospitalSelect: (hospital: Hospital) => void;
   showAmbulance: boolean;
+  showRouteToHospital?: boolean;
+  selectedHospital?: Hospital | null;
 }
 
 const EmergencyMap = ({
@@ -31,7 +33,9 @@ const EmergencyMap = ({
   hospitals,
   selectedHospitalId,
   onHospitalSelect,
-  showAmbulance
+  showAmbulance,
+  showRouteToHospital = false,
+  selectedHospital = null
 }: EmergencyMapProps) => {
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -40,11 +44,13 @@ const EmergencyMap = ({
     ambulance: L.Marker | null;
     hospitals: Map<string, L.Marker>;
     route: L.Polyline | null;
+    hospitalRoute: L.Polyline | null;
   }>({
     user: null,
     ambulance: null,
     hospitals: new Map(),
-    route: null
+    route: null,
+    hospitalRoute: null
   });
 
   // Create custom icons
@@ -205,6 +211,38 @@ const EmergencyMap = ({
       markersRef.current.hospitals.set(hospital.id, marker);
     });
   }, [hospitals, selectedHospitalId, onHospitalSelect]);
+
+  // Draw route from ambulance to hospital during at_hospital phase
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    if (showRouteToHospital && ambulanceLocation && selectedHospital) {
+      const routePoints: L.LatLngExpression[] = [
+        [ambulanceLocation.lat, ambulanceLocation.lng],
+        [selectedHospital.lat, selectedHospital.lng]
+      ];
+
+      if (markersRef.current.hospitalRoute) {
+        markersRef.current.hospitalRoute.setLatLngs(routePoints);
+      } else {
+        markersRef.current.hospitalRoute = L.polyline(routePoints, {
+          color: "#22c55e",
+          weight: 5,
+          opacity: 0.8,
+          dashArray: "12, 8"
+        }).addTo(mapRef.current);
+      }
+
+      // Fit map to show ambulance and hospital
+      const bounds = L.latLngBounds(routePoints);
+      mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+    } else {
+      if (markersRef.current.hospitalRoute) {
+        markersRef.current.hospitalRoute.remove();
+        markersRef.current.hospitalRoute = null;
+      }
+    }
+  }, [showRouteToHospital, ambulanceLocation, selectedHospital]);
 
   return (
     <div ref={mapContainerRef} className="w-full h-full rounded-lg" />
