@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import QuickActionBar from "@/components/QuickActionBar";
+import ChatSupportWidget from "@/components/ChatSupportWidget";
 import EmergencyTrackingOverlay from "@/components/EmergencyTrackingOverlay";
 import HeroSection from "@/components/HeroSection";
 import HowItWorks from "@/components/HowItWorks";
@@ -46,6 +47,8 @@ const Index = () => {
         const event = new CustomEvent('open-basic-care');
         window.dispatchEvent(event);
       }} />
+
+      <ChatSupportWidget />
     </div>
   );
 };
