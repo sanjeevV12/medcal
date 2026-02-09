@@ -166,17 +166,40 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
           };
         });
 
-        // Simulate ambulance movement towards user
+        // Simulate ambulance movement
         setAmbulanceLocation(prev => {
           if (!prev) return prev;
-          const targetLat = userLocation.lat;
-          const targetLng = userLocation.lng;
           const step = 0.002;
-          
-          return {
-            lat: prev.lat + (targetLat > prev.lat ? step : -step),
-            lng: prev.lng + (targetLng > prev.lng ? step : -step)
-          };
+
+          setTracking(currentTracking => {
+            // During at_hospital phase, move toward the selected hospital
+            if (currentTracking.status === 'at_hospital' && selectedHospital) {
+              const targetLat = selectedHospital.lat;
+              const targetLng = selectedHospital.lng;
+              setAmbulanceLocation(ambPrev => {
+                if (!ambPrev) return ambPrev;
+                const dLat = targetLat - ambPrev.lat;
+                const dLng = targetLng - ambPrev.lng;
+                if (Math.abs(dLat) < 0.001 && Math.abs(dLng) < 0.001) return ambPrev;
+                return {
+                  lat: ambPrev.lat + (dLat > 0 ? step : -step),
+                  lng: ambPrev.lng + (dLng > 0 ? step : -step)
+                };
+              });
+            }
+            return currentTracking;
+          });
+
+          // Default: move toward user location (en_route / arriving phases)
+          if (tracking.status !== 'at_hospital') {
+            const targetLat = userLocation.lat;
+            const targetLng = userLocation.lng;
+            return {
+              lat: prev.lat + (targetLat > prev.lat ? step : -step),
+              lng: prev.lng + (targetLng > prev.lng ? step : -step)
+            };
+          }
+          return prev;
         });
       }, 800);
 
@@ -303,7 +326,7 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
     arrived: 'Arrived!'
   };
 
-  const showAmbulance = ['driver_assigned', 'en_route', 'arriving'].includes(tracking.status);
+  const showAmbulance = ['driver_assigned', 'en_route', 'arriving', 'at_hospital'].includes(tracking.status);
 
   if (!isOpen) return null;
 
@@ -340,6 +363,8 @@ const EmergencyTrackingOverlay = ({ isOpen, onClose }: EmergencyTrackingOverlayP
             selectedHospitalId={selectedHospital?.id || null}
             onHospitalSelect={handleHospitalSelect}
             showAmbulance={showAmbulance}
+            showRouteToHospital={tracking.status === 'at_hospital'}
+            selectedHospital={selectedHospital}
           />
         )}
       </div>
