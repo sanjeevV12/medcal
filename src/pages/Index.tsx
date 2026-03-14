@@ -26,6 +26,7 @@ const Index = () => {
       {/* Add padding for the sticky action bar */}
       <div className="pt-14">
         <HeroSection />
+        <AmbulanceCategories />
         <HowItWorks />
         <TrackingSection />
         <LiveTrackingMap />
