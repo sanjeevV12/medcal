@@ -4,7 +4,6 @@ import QuickActionBar from "@/components/QuickActionBar";
 import ChatSupportWidget from "@/components/ChatSupportWidget";
 import EmergencyTrackingOverlay from "@/components/EmergencyTrackingOverlay";
 import HeroSection from "@/components/HeroSection";
-import AmbulanceCategories from "@/components/AmbulanceCategories";
 import HowItWorks from "@/components/HowItWorks";
 import TrackingSection from "@/components/TrackingSection";
 import LiveTrackingMap from "@/components/LiveTrackingMap";
@@ -26,7 +25,6 @@ const Index = () => {
       {/* Add padding for the sticky action bar */}
       <div className="pt-14">
         <HeroSection />
-        <AmbulanceCategories />
         <HowItWorks />
         <TrackingSection />
         <LiveTrackingMap />

@@ -14,54 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      ambulances: {
-        Row: {
-          created_at: string
-          driver_name: string
-          driver_phone: string
-          id: string
-          latitude: number
-          longitude: number
-          photo_url: string | null
-          rating: number | null
-          status: string
-          total_trips: number | null
-          updated_at: string
-          vehicle_number: string
-          vehicle_type: string
-        }
-        Insert: {
-          created_at?: string
-          driver_name: string
-          driver_phone: string
-          id?: string
-          latitude: number
-          longitude: number
-          photo_url?: string | null
-          rating?: number | null
-          status?: string
-          total_trips?: number | null
-          updated_at?: string
-          vehicle_number: string
-          vehicle_type?: string
-        }
-        Update: {
-          created_at?: string
-          driver_name?: string
-          driver_phone?: string
-          id?: string
-          latitude?: number
-          longitude?: number
-          photo_url?: string | null
-          rating?: number | null
-          status?: string
-          total_trips?: number | null
-          updated_at?: string
-          vehicle_number?: string
-          vehicle_type?: string
-        }
-        Relationships: []
-      }
       booking_records: {
         Row: {
           address: string | null
@@ -250,78 +202,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
-      }
-      ride_requests: {
-        Row: {
-          ambulance_id: string | null
-          completed_at: string | null
-          created_at: string
-          destination_hospital_id: string | null
-          distance_km: number | null
-          fare_estimate: number | null
-          final_fare: number | null
-          id: string
-          payment_method: string | null
-          payment_status: string | null
-          pickup_lat: number
-          pickup_lng: number
-          ride_type: string
-          started_at: string | null
-          status: string
-          user_id: string
-        }
-        Insert: {
-          ambulance_id?: string | null
-          completed_at?: string | null
-          created_at?: string
-          destination_hospital_id?: string | null
-          distance_km?: number | null
-          fare_estimate?: number | null
-          final_fare?: number | null
-          id?: string
-          payment_method?: string | null
-          payment_status?: string | null
-          pickup_lat: number
-          pickup_lng: number
-          ride_type?: string
-          started_at?: string | null
-          status?: string
-          user_id: string
-        }
-        Update: {
-          ambulance_id?: string | null
-          completed_at?: string | null
-          created_at?: string
-          destination_hospital_id?: string | null
-          distance_km?: number | null
-          fare_estimate?: number | null
-          final_fare?: number | null
-          id?: string
-          payment_method?: string | null
-          payment_status?: string | null
-          pickup_lat?: number
-          pickup_lng?: number
-          ride_type?: string
-          started_at?: string | null
-          status?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ride_requests_ambulance_id_fkey"
-            columns: ["ambulance_id"]
-            isOneToOne: false
-            referencedRelation: "ambulances"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ride_requests_destination_hospital_id_fkey"
-            columns: ["destination_hospital_id"]
-            isOneToOne: false
-            referencedRelation: "hospitals"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
     Views: {
