@@ -2,7 +2,7 @@ import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import QuickActionBar from "@/components/QuickActionBar";
 import ChatSupportWidget from "@/components/ChatSupportWidget";
-import BookingOverlay from "@/components/BookingOverlay";
+import EmergencyTrackingOverlay from "@/components/EmergencyTrackingOverlay";
 import HeroSection from "@/components/HeroSection";
 import HowItWorks from "@/components/HowItWorks";
 import TrackingSection from "@/components/TrackingSection";
@@ -15,12 +15,12 @@ import StatsSection from "@/components/StatsSection";
 import Footer from "@/components/Footer";
 
 const Index = () => {
-  const [bookingOpen, setBookingOpen] = useState(false);
+  const [emergencyOverlayOpen, setEmergencyOverlayOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <QuickActionBar onEmergencyAlert={() => setBookingOpen(true)} />
+      <QuickActionBar onEmergencyAlert={() => setEmergencyOverlayOpen(true)} />
       
       {/* Add padding for the sticky action bar */}
       <div className="pt-14">
@@ -36,13 +36,13 @@ const Index = () => {
         <Footer />
       </div>
 
-      <BookingOverlay 
-        isOpen={bookingOpen} 
-        onClose={() => setBookingOpen(false)} 
+      <EmergencyTrackingOverlay 
+        isOpen={emergencyOverlayOpen} 
+        onClose={() => setEmergencyOverlayOpen(false)} 
       />
 
       {/* Hidden buttons for hero section triggers */}
-      <button id="emergency-alert-btn" className="hidden" onClick={() => setBookingOpen(true)} />
+      <button id="emergency-alert-btn" className="hidden" onClick={() => setEmergencyOverlayOpen(true)} />
       <button id="basic-care-btn" className="hidden" onClick={() => {
         const event = new CustomEvent('open-basic-care');
         window.dispatchEvent(event);
