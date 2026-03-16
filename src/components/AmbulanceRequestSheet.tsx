@@ -34,7 +34,7 @@ const vehicleTypes: VehicleType[] = [
 type PaymentMethod = "upi" | "card" | "cash";
 
 const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProps) => {
-  const [step, setStep] = useState<"location" | "vehicle" | "confirm" | "payment" | "booked">("location");
+  const [step, setStep] = useState<"location" | "vehicle" | "drivers" | "confirm" | "payment" | "booked">("location");
   const [pickup, setPickup] = useState("");
   const [destination, setDestination] = useState("");
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleType | null>(null);
