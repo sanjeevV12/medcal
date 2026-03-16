@@ -34,7 +34,7 @@ const vehicleTypes: VehicleType[] = [
 type PaymentMethod = "upi" | "card" | "cash";
 
 const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProps) => {
-  const [step, setStep] = useState<"location" | "vehicle" | "confirm" | "payment" | "booked">("location");
+  const [step, setStep] = useState<"location" | "vehicle" | "drivers" | "confirm" | "payment" | "booked">("location");
   const [pickup, setPickup] = useState("");
   const [destination, setDestination] = useState("");
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleType | null>(null);
@@ -87,6 +87,10 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
 
   const handleVehicleSelect = (vehicle: VehicleType) => {
     setSelectedVehicle(vehicle);
+    setStep("drivers");
+  };
+
+  const handleDriverSelect = () => {
     setStep("confirm");
   };
 
@@ -126,12 +130,13 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
           <DialogHeader>
             <DialogTitle className="text-primary-foreground flex items-center gap-2 text-lg">
               {step !== "location" && step !== "booked" && (
-                <button onClick={() => setStep(step === "vehicle" ? "location" : step === "confirm" ? "vehicle" : step === "payment" ? "confirm" : "location")} className="p-1 rounded-full hover:bg-primary-foreground/20">
+                <button onClick={() => setStep(step === "vehicle" ? "location" : step === "drivers" ? "vehicle" : step === "confirm" ? "drivers" : step === "payment" ? "confirm" : "location")} className="p-1 rounded-full hover:bg-primary-foreground/20">
                   <ChevronLeft className="w-5 h-5" />
                 </button>
               )}
               {step === "location" && "Where do you need help?"}
               {step === "vehicle" && "Choose Vehicle"}
+              {step === "drivers" && "Available Nearby"}
               {step === "confirm" && "Confirm Ride"}
               {step === "payment" && "Payment"}
               {step === "booked" && "Ride Confirmed!"}
@@ -213,7 +218,6 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                       <span className="text-xs text-success flex items-center gap-1">
                         <Clock className="w-3 h-3" /> {vehicle.eta}
                       </span>
-                      <span className="text-xs text-muted-foreground">₹{vehicle.perKm}/km</span>
                     </div>
                   </div>
                 </button>
@@ -221,7 +225,52 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
             </div>
           )}
 
-          {/* Step 3: Confirm */}
+          {/* Step 3: Available Drivers */}
+          {step === "drivers" && selectedVehicle && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-accent/30 mb-1">
+                <div className={`w-10 h-10 rounded-lg bg-secondary flex items-center justify-center ${selectedVehicle.color}`}>
+                  {selectedVehicle.icon}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{selectedVehicle.name}</p>
+                  <p className="text-xs text-muted-foreground">₹{calculateFare(selectedVehicle).toLocaleString()} estimated</p>
+                </div>
+              </div>
+
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Available nearby</p>
+
+              {[
+                { name: "Rajesh Kumar", rating: 4.8, trips: 1240, eta: "3 min away", plate: "MP-09-AB-1234", photo: "RK" },
+                { name: "Sunil Verma", rating: 4.6, trips: 890, eta: "5 min away", plate: "MP-09-CD-5678", photo: "SV" },
+                { name: "Amit Sharma", rating: 4.9, trips: 2100, eta: "7 min away", plate: "MP-09-EF-9012", photo: "AS" },
+              ].map((driver, i) => (
+                <button
+                  key={i}
+                  onClick={handleDriverSelect}
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-border hover:border-primary hover:bg-accent/30 transition-all text-left group"
+                >
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                    {driver.photo}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-semibold text-foreground text-sm">{driver.name}</h4>
+                      <span className="text-xs text-success font-medium">{driver.eta}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{driver.plate}</p>
+                    <div className="flex items-center gap-3 mt-1">
+                      <span className="text-xs text-foreground flex items-center gap-1">
+                        <Star className="w-3 h-3 text-warning fill-warning" /> {driver.rating}
+                      </span>
+                      <span className="text-xs text-muted-foreground">{driver.trips.toLocaleString()} trips</span>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
           {step === "confirm" && selectedVehicle && (
             <div className="space-y-5">
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-secondary">
