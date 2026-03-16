@@ -18,6 +18,7 @@ import AIDoctorSection from "@/components/AIDoctorSection";
 
 const Index = () => {
   const [emergencyOverlayOpen, setEmergencyOverlayOpen] = useState(false);
+  const [ambulanceSheetOpen, setAmbulanceSheetOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
