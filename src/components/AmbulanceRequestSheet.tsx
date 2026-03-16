@@ -130,7 +130,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
           <DialogHeader>
             <DialogTitle className="text-primary-foreground flex items-center gap-2 text-lg">
               {step !== "location" && step !== "booked" && (
-                <button onClick={() => setStep(step === "vehicle" ? "location" : step === "confirm" ? "vehicle" : step === "payment" ? "confirm" : "location")} className="p-1 rounded-full hover:bg-primary-foreground/20">
+                <button onClick={() => setStep(step === "vehicle" ? "location" : step === "drivers" ? "vehicle" : step === "confirm" ? "drivers" : step === "payment" ? "confirm" : "location")} className="p-1 rounded-full hover:bg-primary-foreground/20">
                   <ChevronLeft className="w-5 h-5" />
                 </button>
               )}
