@@ -28,16 +28,33 @@ const Index = () => {
       {/* Add padding for the sticky action bar */}
       <div className="pt-14">
         <HeroSection />
+
+        {/* Request Ambulance CTA */}
+        <section className="py-12 bg-secondary/30">
+          <div className="container mx-auto px-4 text-center">
+            <button
+              onClick={() => setAmbulanceSheetOpen(true)}
+              className="w-full max-w-md mx-auto flex items-center justify-center gap-3 py-5 px-8 rounded-2xl bg-gradient-emergency text-emergency-foreground font-bold text-lg shadow-emergency hover:opacity-90 transition-all hover:-translate-y-0.5 active:translate-y-0"
+            >
+              🚑 Request Ambulance
+            </button>
+            <p className="text-muted-foreground text-sm mt-3">Bike • Auto • Mayuri • BLS • ALS • Air Ambulance</p>
+          </div>
+        </section>
+
         <HowItWorks />
         <TrackingSection />
         <LiveTrackingMap />
         <ServicesSection />
+        <AIDoctorSection />
         <PricingSection />
         <AdditionalServices />
         <TestimonialsSection />
         <StatsSection />
         <Footer />
       </div>
+
+      <AmbulanceRequestSheet open={ambulanceSheetOpen} onOpenChange={setAmbulanceSheetOpen} />
 
       <EmergencyTrackingOverlay 
         isOpen={emergencyOverlayOpen} 
@@ -50,6 +67,7 @@ const Index = () => {
         const event = new CustomEvent('open-basic-care');
         window.dispatchEvent(event);
       }} />
+      <button id="request-ambulance-btn" className="hidden" onClick={() => setAmbulanceSheetOpen(true)} />
 
       <ChatSupportWidget />
     </div>
