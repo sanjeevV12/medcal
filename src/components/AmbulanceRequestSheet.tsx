@@ -218,7 +218,6 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                       <span className="text-xs text-success flex items-center gap-1">
                         <Clock className="w-3 h-3" /> {vehicle.eta}
                       </span>
-                      <span className="text-xs text-muted-foreground">₹{vehicle.perKm}/km</span>
                     </div>
                   </div>
                 </button>
