@@ -136,6 +136,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
               )}
               {step === "location" && "Where do you need help?"}
               {step === "vehicle" && "Choose Vehicle"}
+              {step === "drivers" && "Available Nearby"}
               {step === "confirm" && "Confirm Ride"}
               {step === "payment" && "Payment"}
               {step === "booked" && "Ride Confirmed!"}
