@@ -87,6 +87,10 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
 
   const handleVehicleSelect = (vehicle: VehicleType) => {
     setSelectedVehicle(vehicle);
+    setStep("drivers");
+  };
+
+  const handleDriverSelect = () => {
     setStep("confirm");
   };
 
