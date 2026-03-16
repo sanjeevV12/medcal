@@ -261,7 +261,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                     <p className="text-xs text-muted-foreground">{driver.plate}</p>
                     <div className="flex items-center gap-3 mt-1">
                       <span className="text-xs text-foreground flex items-center gap-1">
-                        <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" /> {driver.rating}
+                        <Star className="w-3 h-3 text-warning fill-warning" /> {driver.rating}
                       </span>
                       <span className="text-xs text-muted-foreground">{driver.trips.toLocaleString()} trips</span>
                     </div>
