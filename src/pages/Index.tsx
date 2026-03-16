@@ -13,6 +13,8 @@ import AdditionalServices from "@/components/AdditionalServices";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import StatsSection from "@/components/StatsSection";
 import Footer from "@/components/Footer";
+import AmbulanceRequestSheet from "@/components/AmbulanceRequestSheet";
+import AIDoctorSection from "@/components/AIDoctorSection";
 
 const Index = () => {
   const [emergencyOverlayOpen, setEmergencyOverlayOpen] = useState(false);
