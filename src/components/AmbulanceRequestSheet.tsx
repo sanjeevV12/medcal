@@ -267,9 +267,9 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Available nearby</p>
 
               {[
-                { name: "Rajesh Kumar", rating: 4.8, trips: 1240, eta: "3 min away", plate: "MP-09-AB-1234", photo: "RK" },
-                { name: "Sunil Verma", rating: 4.6, trips: 890, eta: "5 min away", plate: "MP-09-CD-5678", photo: "SV" },
-                { name: "Amit Sharma", rating: 4.9, trips: 2100, eta: "7 min away", plate: "MP-09-EF-9012", photo: "AS" },
+                { name: "Rajesh Kumar", rating: 4.8, trips: 1240, eta: "3 min away", plate: "MP-09-AB-1234", photo: "RK", phone: "9876543210" },
+                { name: "Sunil Verma", rating: 4.6, trips: 890, eta: "5 min away", plate: "MP-09-CD-5678", photo: "SV", phone: "9876543211" },
+                { name: "Amit Sharma", rating: 4.9, trips: 2100, eta: "7 min away", plate: "MP-09-EF-9012", photo: "AS", phone: "9876543212" },
               ].map((driver, i) => (
                 <button
                   key={i}
