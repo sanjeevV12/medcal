@@ -48,6 +48,7 @@ const Index = () => {
         <LiveTrackingMap />
         <ServicesSection />
         <AIDoctorSection />
+        <DriverRegistration />
         <PricingSection />
         <AdditionalServices />
         <TestimonialsSection />
