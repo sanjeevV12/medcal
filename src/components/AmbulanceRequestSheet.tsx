@@ -273,7 +273,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
               ].map((driver, i) => (
                 <button
                   key={i}
-                  onClick={handleDriverSelect}
+                  onClick={() => handleDriverSelect({ name: driver.name, plate: driver.plate, phone: driver.phone })}
                   className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-border hover:border-primary hover:bg-accent/30 transition-all text-left group"
                 >
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
