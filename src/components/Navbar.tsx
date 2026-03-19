@@ -39,6 +39,9 @@ const Navbar = () => {
             <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
               Contact
             </a>
+            <a href="#driver-registration" className="text-muted-foreground hover:text-foreground transition-colors">
+              Drive with Us
+            </a>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
