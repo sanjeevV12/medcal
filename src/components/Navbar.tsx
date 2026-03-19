@@ -70,9 +70,6 @@ const Navbar = () => {
               </Button>
             )}
             
-            <Button variant="emergency" size="sm" asChild>
-              <a href="tel:+917479898265">Emergency SOS</a>
-            </Button>
           </div>
 
           <button
