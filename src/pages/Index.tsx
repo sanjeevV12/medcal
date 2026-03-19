@@ -15,6 +15,7 @@ import StatsSection from "@/components/StatsSection";
 import Footer from "@/components/Footer";
 import AmbulanceRequestSheet from "@/components/AmbulanceRequestSheet";
 import AIDoctorSection from "@/components/AIDoctorSection";
+import DriverRegistration from "@/components/DriverRegistration";
 
 const Index = () => {
   const [emergencyOverlayOpen, setEmergencyOverlayOpen] = useState(false);
