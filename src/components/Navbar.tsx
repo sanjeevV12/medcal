@@ -112,9 +112,7 @@ const Navbar = () => {
                 </Link>
               )}
               
-              <Button variant="emergency" className="mt-2" asChild>
-                <a href="tel:+917479898265">Call: +91-7479898265</a>
-              </Button>
+              
             </div>
           </div>
         )}

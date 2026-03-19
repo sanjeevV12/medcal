@@ -90,12 +90,35 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     setStep("drivers");
   };
 
-  const handleDriverSelect = () => {
+  const [selectedDriver, setSelectedDriver] = useState<{ name: string; plate: string; phone: string } | null>(null);
+
+  const handleDriverSelect = (driver: { name: string; plate: string; phone: string }) => {
+    setSelectedDriver(driver);
     setStep("confirm");
   };
 
   const handleConfirmRide = () => {
     setStep("payment");
+  };
+
+  const sendWhatsAppNotification = (driverPhone: string) => {
+    if (!selectedVehicle) return;
+
+    const fare = calculateFare(selectedVehicle);
+    const locationUrl = `https://www.google.com/maps?q=23.2599,77.4126`;
+
+    // Message to admin (7479898265)
+    const adminMsg = `🚑 *New Booking Alert!*\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n🚗 Vehicle: ${selectedVehicle.name}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n💰 Fare: ₹${fare.toLocaleString()}\n💳 Payment: ${paymentMethod}\n📍 Live Location: ${locationUrl}`;
+    window.open(`https://wa.me/917479898265?text=${encodeURIComponent(adminMsg)}`, "_blank");
+
+    // Message to driver
+    const cleanPhone = driverPhone.replace(/[^0-9]/g, "");
+    if (cleanPhone) {
+      const driverMsg = `🚑 *New Ride Request!*\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n🚗 Vehicle: ${selectedVehicle.name}\n💰 Fare: ₹${fare.toLocaleString()}\n💳 Payment: ${paymentMethod}\n📍 Pickup Location: ${locationUrl}\n\nPlease confirm and head to pickup!`;
+      setTimeout(() => {
+        window.open(`https://wa.me/91${cleanPhone}?text=${encodeURIComponent(driverMsg)}`, "_blank");
+      }, 1000);
+    }
   };
 
   const handlePayment = async () => {
@@ -118,8 +141,11 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
       });
     }
 
+    // Send WhatsApp notifications to admin and driver
+    sendWhatsAppNotification(selectedDriver?.phone || "");
+
     setStep("booked");
-    toast({ title: "🚑 Ride Confirmed!", description: `Your ${selectedVehicle?.name} is on the way!` });
+    toast({ title: "🚑 Ride Confirmed!", description: `Your ${selectedVehicle?.name} is on the way! Booking details sent via WhatsApp.` });
   };
 
   return (
