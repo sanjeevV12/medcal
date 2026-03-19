@@ -90,12 +90,35 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     setStep("drivers");
   };
 
-  const handleDriverSelect = () => {
+  const [selectedDriver, setSelectedDriver] = useState<{ name: string; plate: string; phone: string } | null>(null);
+
+  const handleDriverSelect = (driver: { name: string; plate: string; phone: string }) => {
+    setSelectedDriver(driver);
     setStep("confirm");
   };
 
   const handleConfirmRide = () => {
     setStep("payment");
+  };
+
+  const sendWhatsAppNotification = (driverPhone: string) => {
+    if (!selectedVehicle) return;
+
+    const fare = calculateFare(selectedVehicle);
+    const locationUrl = `https://www.google.com/maps?q=23.2599,77.4126`;
+
+    // Message to admin (7479898265)
+    const adminMsg = `🚑 *New Booking Alert!*\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n🚗 Vehicle: ${selectedVehicle.name}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n💰 Fare: ₹${fare.toLocaleString()}\n💳 Payment: ${paymentMethod}\n📍 Live Location: ${locationUrl}`;
+    window.open(`https://wa.me/917479898265?text=${encodeURIComponent(adminMsg)}`, "_blank");
+
+    // Message to driver
+    const cleanPhone = driverPhone.replace(/[^0-9]/g, "");
+    if (cleanPhone) {
+      const driverMsg = `🚑 *New Ride Request!*\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n🚗 Vehicle: ${selectedVehicle.name}\n💰 Fare: ₹${fare.toLocaleString()}\n💳 Payment: ${paymentMethod}\n📍 Pickup Location: ${locationUrl}\n\nPlease confirm and head to pickup!`;
+      setTimeout(() => {
+        window.open(`https://wa.me/91${cleanPhone}?text=${encodeURIComponent(driverMsg)}`, "_blank");
+      }, 1000);
+    }
   };
 
   const handlePayment = async () => {
@@ -118,8 +141,11 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
       });
     }
 
+    // Send WhatsApp notifications to admin and driver
+    sendWhatsAppNotification(selectedDriver?.phone || "");
+
     setStep("booked");
-    toast({ title: "🚑 Ride Confirmed!", description: `Your ${selectedVehicle?.name} is on the way!` });
+    toast({ title: "🚑 Ride Confirmed!", description: `Your ${selectedVehicle?.name} is on the way! Booking details sent via WhatsApp.` });
   };
 
   return (
@@ -241,13 +267,13 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Available nearby</p>
 
               {[
-                { name: "Rajesh Kumar", rating: 4.8, trips: 1240, eta: "3 min away", plate: "MP-09-AB-1234", photo: "RK" },
-                { name: "Sunil Verma", rating: 4.6, trips: 890, eta: "5 min away", plate: "MP-09-CD-5678", photo: "SV" },
-                { name: "Amit Sharma", rating: 4.9, trips: 2100, eta: "7 min away", plate: "MP-09-EF-9012", photo: "AS" },
+                { name: "Rajesh Kumar", rating: 4.8, trips: 1240, eta: "3 min away", plate: "MP-09-AB-1234", photo: "RK", phone: "9876543210" },
+                { name: "Sunil Verma", rating: 4.6, trips: 890, eta: "5 min away", plate: "MP-09-CD-5678", photo: "SV", phone: "9876543211" },
+                { name: "Amit Sharma", rating: 4.9, trips: 2100, eta: "7 min away", plate: "MP-09-EF-9012", photo: "AS", phone: "9876543212" },
               ].map((driver, i) => (
                 <button
                   key={i}
-                  onClick={handleDriverSelect}
+                  onClick={() => handleDriverSelect({ name: driver.name, plate: driver.plate, phone: driver.phone })}
                   className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-border hover:border-primary hover:bg-accent/30 transition-all text-left group"
                 >
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">

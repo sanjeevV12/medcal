@@ -104,6 +104,60 @@ export type Database = {
         }
         Relationships: []
       }
+      drivers: {
+        Row: {
+          created_at: string
+          experience_years: number | null
+          full_name: string
+          id: string
+          is_available: boolean | null
+          latitude: number | null
+          license_number: string
+          longitude: number | null
+          phone: string
+          rating: number | null
+          total_trips: number | null
+          updated_at: string
+          vehicle_number: string
+          vehicle_type: string
+          whatsapp_number: string
+        }
+        Insert: {
+          created_at?: string
+          experience_years?: number | null
+          full_name: string
+          id?: string
+          is_available?: boolean | null
+          latitude?: number | null
+          license_number: string
+          longitude?: number | null
+          phone: string
+          rating?: number | null
+          total_trips?: number | null
+          updated_at?: string
+          vehicle_number: string
+          vehicle_type?: string
+          whatsapp_number: string
+        }
+        Update: {
+          created_at?: string
+          experience_years?: number | null
+          full_name?: string
+          id?: string
+          is_available?: boolean | null
+          latitude?: number | null
+          license_number?: string
+          longitude?: number | null
+          phone?: string
+          rating?: number | null
+          total_trips?: number | null
+          updated_at?: string
+          vehicle_number?: string
+          vehicle_type?: string
+          whatsapp_number?: string
+        }
+        Relationships: []
+      }
       emergency_contacts: {
         Row: {
           created_at: string

@@ -39,6 +39,9 @@ const Navbar = () => {
             <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
               Contact
             </a>
+            <a href="#driver-registration" className="text-muted-foreground hover:text-foreground transition-colors">
+              Drive with Us
+            </a>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -70,9 +73,6 @@ const Navbar = () => {
               </Button>
             )}
             
-            <Button variant="emergency" size="sm" asChild>
-              <a href="tel:+917479898265">Emergency SOS</a>
-            </Button>
           </div>
 
           <button
@@ -115,9 +115,7 @@ const Navbar = () => {
                 </Link>
               )}
               
-              <Button variant="emergency" className="mt-2" asChild>
-                <a href="tel:+917479898265">Call: +91-7479898265</a>
-              </Button>
+              
             </div>
           </div>
         )}
