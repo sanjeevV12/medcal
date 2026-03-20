@@ -451,6 +451,20 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
         </div>
       </DialogContent>
     </Dialog>
+
+    <RideTrackingView
+      isOpen={showTracking}
+      onClose={() => setShowTracking(false)}
+      driverName={selectedDriver?.name || "Driver"}
+      driverPhone={selectedDriver?.phone || ""}
+      vehiclePlate={selectedDriver?.plate || ""}
+      vehicleName={selectedVehicle?.name || "Ambulance"}
+      pickup={pickup}
+      destination={destination}
+      fare={selectedVehicle ? calculateFare(selectedVehicle) : 0}
+      paymentMethod={paymentMethod}
+    />
+    </>
   );
 };
 
