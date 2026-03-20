@@ -92,6 +92,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
   };
 
   const [selectedDriver, setSelectedDriver] = useState<{ name: string; plate: string; phone: string } | null>(null);
+  const [showTracking, setShowTracking] = useState(false);
 
   const handleDriverSelect = (driver: { name: string; plate: string; phone: string }) => {
     setSelectedDriver(driver);
