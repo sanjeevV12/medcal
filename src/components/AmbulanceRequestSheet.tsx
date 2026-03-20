@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { MapPin, Navigation, Star, Phone, ArrowRight, Clock, Bike, Car, Plane, Truck, ChevronLeft, CreditCard, Smartphone, Building2, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import RideTrackingView from "./RideTrackingView";
 
 interface AmbulanceRequestSheetProps {
   open: boolean;
@@ -91,6 +92,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
   };
 
   const [selectedDriver, setSelectedDriver] = useState<{ name: string; plate: string; phone: string } | null>(null);
+  const [showTracking, setShowTracking] = useState(false);
 
   const handleDriverSelect = (driver: { name: string; plate: string; phone: string }) => {
     setSelectedDriver(driver);
@@ -149,6 +151,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px] max-h-[90vh] overflow-y-auto p-0">
         {/* Header */}
@@ -438,15 +441,33 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 </div>
               </div>
 
-              <Button onClick={() => onOpenChange(false)} className="w-full" size="lg">
-                Done
+              <Button onClick={() => { onOpenChange(false); setShowTracking(true); }} className="w-full" size="lg" variant="emergency">
+                🗺️ Track Ambulance Live
+              </Button>
+              <Button onClick={() => onOpenChange(false)} variant="outline" className="w-full" size="lg">
+                Close
               </Button>
             </div>
           )}
         </div>
       </DialogContent>
     </Dialog>
+
+    <RideTrackingView
+      isOpen={showTracking}
+      onClose={() => setShowTracking(false)}
+      driverName={selectedDriver?.name || "Driver"}
+      driverPhone={selectedDriver?.phone || ""}
+      vehiclePlate={selectedDriver?.plate || ""}
+      vehicleName={selectedVehicle?.name || "Ambulance"}
+      pickup={pickup}
+      destination={destination}
+      fare={selectedVehicle ? calculateFare(selectedVehicle) : 0}
+      paymentMethod={paymentMethod}
+    />
+    </>
   );
 };
 
+export { AmbulanceRequestSheet };
 export default AmbulanceRequestSheet;
