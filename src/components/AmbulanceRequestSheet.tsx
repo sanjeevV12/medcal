@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { MapPin, Navigation, Star, Phone, ArrowRight, Clock, Bike, Car, Plane, Truck, ChevronLeft, CreditCard, Smartphone, Building2, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import RideTrackingView from "./RideTrackingView";
 
 interface AmbulanceRequestSheetProps {
   open: boolean;
