@@ -335,29 +335,14 @@ const LiveTrackingMap = () => {
 
           {/* Control Panel */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Emergency Button */}
+            {/* Status indicator when idle */}
             {tracking.status === 'idle' && (
-              <Button 
-                variant="emergency" 
-                size="lg" 
-                className="w-full h-16 text-lg"
-                onClick={handleEmergencyRequest}
-              >
-                <Navigation className="w-5 h-5 mr-2" />
-                Request Emergency Ambulance
-              </Button>
+              <div className="w-full h-16 flex items-center justify-center text-muted-foreground text-sm border border-border rounded-xl bg-secondary/30">
+                <span className="inline-block w-2 h-2 rounded-full bg-success mr-2 animate-pulse" />
+                Ready to assist
+              </div>
             )}
 
-            {tracking.status === 'arrived' && (
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="w-full"
-                onClick={resetTracking}
-              >
-                Reset Demo
-              </Button>
-            )}
 
             {/* Driver Info Card */}
             {(tracking.status === 'driver_assigned' || tracking.status === 'en_route' || tracking.status === 'arriving' || tracking.status === 'arrived') && (
