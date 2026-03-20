@@ -29,24 +29,15 @@ const HeroSection = () => {
               From first aid at ₹499 to full ambulance service – we've got you covered.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex justify-center lg:justify-start">
               <Button 
                 variant="emergency" 
                 size="xl" 
-                className="group"
-                onClick={() => document.getElementById('emergency-alert-btn')?.click()}
+                className="group text-lg"
+                onClick={() => document.getElementById('request-ambulance-btn')?.click()}
               >
-                <AlertCircle className="w-5 h-5" />
-                Emergency Alert
+                🚑 Request Ambulance
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button 
-                variant="hero-outline" 
-                size="xl"
-                onClick={() => document.getElementById('basic-care-btn')?.click()}
-              >
-                <MapPin className="w-5 h-5" />
-                Get Basic Care
               </Button>
             </div>
 
