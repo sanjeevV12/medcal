@@ -106,15 +106,6 @@ const ServicesSection = () => {
                 ))}
               </ul>
 
-              <Button
-                variant={service.buttonVariant}
-                size="lg"
-                className="w-full group"
-                onClick={() => handleServiceClick(service.popular)}
-              >
-                {service.popular ? "Request Ambulance" : "Get Basic Care"}
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
             </div>
           ))}
         </div>

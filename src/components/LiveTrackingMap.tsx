@@ -343,16 +343,6 @@ const LiveTrackingMap = () => {
               </div>
             )}
 
-            {tracking.status === 'arrived' && (
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="w-full"
-                onClick={resetTracking}
-              >
-                Reset Demo
-              </Button>
-            )}
 
             {/* Driver Info Card */}
             {(tracking.status === 'driver_assigned' || tracking.status === 'en_route' || tracking.status === 'arriving' || tracking.status === 'arrived') && (
