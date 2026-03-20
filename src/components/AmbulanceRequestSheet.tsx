@@ -440,8 +440,11 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 </div>
               </div>
 
-              <Button onClick={() => onOpenChange(false)} className="w-full" size="lg">
-                Done
+              <Button onClick={() => { onOpenChange(false); setShowTracking(true); }} className="w-full" size="lg" variant="emergency">
+                🗺️ Track Ambulance Live
+              </Button>
+              <Button onClick={() => onOpenChange(false)} variant="outline" className="w-full" size="lg">
+                Close
               </Button>
             </div>
           )}
