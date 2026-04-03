@@ -53,10 +53,9 @@ const DriverRegistration = () => {
 
       if (error) throw error;
 
-      // Send WhatsApp confirmation to admin
-      const adminMsg = `🚑 New Driver Registered!\n\nName: ${form.full_name}\nPhone: ${form.phone}\nWhatsApp: ${form.whatsapp_number}\nVehicle: ${form.vehicle_type}\nVehicle No: ${form.vehicle_number}\nLicense: ${form.license_number}`;
-      const adminWhatsAppUrl = `https://wa.me/917479898265?text=${encodeURIComponent(adminMsg)}`;
-      window.open(adminWhatsAppUrl, "_blank");
+      // Send Telegram notification to admin
+      const adminMsg = `🚑 <b>New Driver Registered!</b>\n\n👤 Name: ${form.full_name}\n📞 Phone: ${form.phone}\n💬 WhatsApp: ${form.whatsapp_number}\n🚗 Vehicle: ${form.vehicle_type}\n🔢 Vehicle No: ${form.vehicle_number}\n🪪 License: ${form.license_number}\n📅 Experience: ${form.experience_years || 0} years`;
+      sendTelegramNotification(adminMsg);
 
       setSubmitted(true);
       toast({ title: "✅ Registration Successful!", description: "You are now registered as a driver partner." });
