@@ -274,34 +274,46 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
 
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Available nearby</p>
 
-              {[
-                { name: "Rajesh Kumar", rating: 4.8, trips: 1240, eta: "3 min away", plate: "MP-09-AB-1234", photo: "RK", phone: "9876543210" },
-                { name: "Sunil Verma", rating: 4.6, trips: 890, eta: "5 min away", plate: "MP-09-CD-5678", photo: "SV", phone: "9876543211" },
-                { name: "Amit Sharma", rating: 4.9, trips: 2100, eta: "7 min away", plate: "MP-09-EF-9012", photo: "AS", phone: "9876543212" },
-              ].map((driver, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleDriverSelect({ name: driver.name, plate: driver.plate, phone: driver.phone })}
-                  className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-border hover:border-primary hover:bg-accent/30 transition-all text-left group"
-                >
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
-                    {driver.photo}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-semibold text-foreground text-sm">{driver.name}</h4>
-                      <span className="text-xs text-success font-medium">{driver.eta}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{driver.plate}</p>
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="text-xs text-foreground flex items-center gap-1">
-                        <Star className="w-3 h-3 text-warning fill-warning" /> {driver.rating}
-                      </span>
-                      <span className="text-xs text-muted-foreground">{driver.trips.toLocaleString()} trips</span>
-                    </div>
-                  </div>
-                </button>
-              ))}
+              {loadingDrivers ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  <span className="ml-2 text-sm text-muted-foreground">Finding drivers...</span>
+                </div>
+              ) : dbDrivers.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p className="text-sm">No drivers available for this vehicle type right now.</p>
+                  <p className="text-xs mt-1">Please try another vehicle or wait a moment.</p>
+                </div>
+              ) : (
+                dbDrivers.map((driver) => {
+                  const initials = driver.full_name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+                  const etaMin = Math.floor(Math.random() * 10) + 3;
+                  return (
+                    <button
+                      key={driver.id}
+                      onClick={() => handleDriverSelect({ name: driver.full_name, plate: driver.vehicle_number, phone: driver.whatsapp_number || driver.phone })}
+                      className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-border hover:border-primary hover:bg-accent/30 transition-all text-left group"
+                    >
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                        {initials}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-semibold text-foreground text-sm">{driver.full_name}</h4>
+                          <span className="text-xs text-success font-medium">{etaMin} min away</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{driver.vehicle_number}</p>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-xs text-foreground flex items-center gap-1">
+                            <Star className="w-3 h-3 text-warning fill-warning" /> {driver.rating || 4.5}
+                          </span>
+                          <span className="text-xs text-muted-foreground">{(driver.total_trips || 0).toLocaleString()} trips</span>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })
+              )}
             </div>
           )}
 
