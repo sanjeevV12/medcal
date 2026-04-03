@@ -133,8 +133,8 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
       });
     }
 
-    // Send WhatsApp notifications to admin and driver
-    sendWhatsAppNotification(selectedDriver?.phone || "");
+    // Send Telegram notification to admin
+    sendTelegramBookingNotification(selectedDriver?.phone || "");
 
     setStep("booked");
     toast({ title: "🚑 Ride Confirmed!", description: `Your ${selectedVehicle?.name} is on the way! Booking details sent via WhatsApp.` });
