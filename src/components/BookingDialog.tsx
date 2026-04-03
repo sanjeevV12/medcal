@@ -89,6 +89,10 @@ const BookingDialog = ({ children, serviceType, title }: BookingDialogProps) => 
       });
     }
 
+    // Send Telegram notification to admin
+    const telegramMsg = `📋 <b>New Service Booking!</b>\n\n👤 Name: ${formData.name}\n📞 Phone: ${formData.phone}\n📍 Address: ${formData.address}\n🩺 Service: ${serviceType}\n💰 Amount: ${getServicePrice()}\n💳 Payment: ${paymentMethod}\n📅 Date: ${formData.date || 'ASAP'}\n🕐 Time: ${formData.time || 'Any'}\n🆔 Booking ID: ${bookingId}${formData.notes ? `\n📝 Notes: ${formData.notes}` : ''}`;
+    sendTelegramNotification(telegramMsg);
+
     // Send booking confirmation SMS
     await sendNotification({
       type: 'booking_confirmation',
