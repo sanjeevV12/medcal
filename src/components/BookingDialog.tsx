@@ -9,6 +9,7 @@ import { Calendar, Clock, User, Phone, MapPin, CheckCircle, CreditCard, Smartpho
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { sendNotification } from "@/hooks/useNotifications";
+import { sendTelegramNotification } from "@/lib/telegram";
 
 interface BookingDialogProps {
   children: React.ReactNode;
