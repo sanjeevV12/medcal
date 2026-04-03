@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MapPin, Navigation, Star, Phone, ArrowRight, Clock, Bike, Car, Plane, Truck, ChevronLeft, CreditCard, Smartphone, Building2, CheckCircle } from "lucide-react";
+import { MapPin, Navigation, Star, Phone, ArrowRight, Clock, Bike, Car, Plane, Truck, ChevronLeft, CreditCard, Smartphone, Building2, CheckCircle, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import RideTrackingView from "./RideTrackingView";
