@@ -104,24 +104,13 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     setStep("payment");
   };
 
-  const sendWhatsAppNotification = (driverPhone: string) => {
+  const sendTelegramBookingNotification = (driverPhone: string) => {
     if (!selectedVehicle) return;
 
     const fare = calculateFare(selectedVehicle);
-    const locationUrl = `https://www.google.com/maps?q=23.2599,77.4126`;
 
-    // Message to admin (7479898265)
-    const adminMsg = `🚑 *New Booking Alert!*\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n🚗 Vehicle: ${selectedVehicle.name}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n💰 Fare: ₹${fare.toLocaleString()}\n💳 Payment: ${paymentMethod}\n📍 Live Location: ${locationUrl}`;
-    window.open(`https://wa.me/917479898265?text=${encodeURIComponent(adminMsg)}`, "_blank");
-
-    // Message to driver
-    const cleanPhone = driverPhone.replace(/[^0-9]/g, "");
-    if (cleanPhone) {
-      const driverMsg = `🚑 *New Ride Request!*\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n🚗 Vehicle: ${selectedVehicle.name}\n💰 Fare: ₹${fare.toLocaleString()}\n💳 Payment: ${paymentMethod}\n📍 Pickup Location: ${locationUrl}\n\nPlease confirm and head to pickup!`;
-      setTimeout(() => {
-        window.open(`https://wa.me/91${cleanPhone}?text=${encodeURIComponent(driverMsg)}`, "_blank");
-      }, 1000);
-    }
+    const msg = `🚑 <b>New Ambulance Booking!</b>\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n🚗 Vehicle: ${selectedVehicle.name}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n📞 Driver Phone: ${driverPhone}\n💰 Fare: ₹${fare.toLocaleString()}\n💳 Payment: ${paymentMethod}`;
+    sendTelegramNotification(msg);
   };
 
   const handlePayment = async () => {
