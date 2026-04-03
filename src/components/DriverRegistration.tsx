@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { UserPlus, Truck, Phone, CreditCard, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { sendTelegramNotification } from "@/lib/telegram";
 
 const vehicleOptions = [
   { value: "medi-bike", label: "Medi-Bike" },
