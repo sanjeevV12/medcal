@@ -6,6 +6,7 @@ import { MapPin, Navigation, Star, Phone, ArrowRight, Clock, Bike, Car, Plane, T
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import RideTrackingView from "./RideTrackingView";
+import { sendTelegramNotification } from "@/lib/telegram";
 
 interface AmbulanceRequestSheetProps {
   open: boolean;
