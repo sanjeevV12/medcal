@@ -94,6 +94,20 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
 
   const [selectedDriver, setSelectedDriver] = useState<{ name: string; plate: string; phone: string } | null>(null);
   const [showTracking, setShowTracking] = useState(false);
+  const [dbDrivers, setDbDrivers] = useState<any[]>([]);
+  const [loadingDrivers, setLoadingDrivers] = useState(false);
+
+  const fetchDrivers = useCallback(async (vehicleType: string) => {
+    setLoadingDrivers(true);
+    const { data } = await supabase
+      .from("drivers")
+      .select("*")
+      .eq("vehicle_type", vehicleType)
+      .eq("is_available", true)
+      .limit(10);
+    setDbDrivers(data || []);
+    setLoadingDrivers(false);
+  }, []);
 
   const handleDriverSelect = (driver: { name: string; plate: string; phone: string }) => {
     setSelectedDriver(driver);
