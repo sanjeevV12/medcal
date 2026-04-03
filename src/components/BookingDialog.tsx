@@ -9,6 +9,7 @@ import { Calendar, Clock, User, Phone, MapPin, CheckCircle, CreditCard, Smartpho
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { sendNotification } from "@/hooks/useNotifications";
+import { sendTelegramNotification } from "@/lib/telegram";
 
 interface BookingDialogProps {
   children: React.ReactNode;
@@ -87,6 +88,10 @@ const BookingDialog = ({ children, serviceType, title }: BookingDialogProps) => 
         notes: formData.notes || null
       });
     }
+
+    // Send Telegram notification to admin
+    const telegramMsg = `📋 <b>New Service Booking!</b>\n\n👤 Name: ${formData.name}\n📞 Phone: ${formData.phone}\n📍 Address: ${formData.address}\n🩺 Service: ${serviceType}\n💰 Amount: ${getServicePrice()}\n💳 Payment: ${paymentMethod}\n📅 Date: ${formData.date || 'ASAP'}\n🕐 Time: ${formData.time || 'Any'}\n🆔 Booking ID: ${bookingId}${formData.notes ? `\n📝 Notes: ${formData.notes}` : ''}`;
+    sendTelegramNotification(telegramMsg);
 
     // Send booking confirmation SMS
     await sendNotification({

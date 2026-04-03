@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MapPin, Navigation, Star, Phone, ArrowRight, Clock, Bike, Car, Plane, Truck, ChevronLeft, CreditCard, Smartphone, Building2, CheckCircle } from "lucide-react";
+import { MapPin, Navigation, Star, Phone, ArrowRight, Clock, Bike, Car, Plane, Truck, ChevronLeft, CreditCard, Smartphone, Building2, CheckCircle, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import RideTrackingView from "./RideTrackingView";
+import { sendTelegramNotification } from "@/lib/telegram";
 
 interface AmbulanceRequestSheetProps {
   open: boolean;
@@ -88,11 +89,26 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
 
   const handleVehicleSelect = (vehicle: VehicleType) => {
     setSelectedVehicle(vehicle);
+    fetchDrivers(vehicle.id);
     setStep("drivers");
   };
 
   const [selectedDriver, setSelectedDriver] = useState<{ name: string; plate: string; phone: string } | null>(null);
   const [showTracking, setShowTracking] = useState(false);
+  const [dbDrivers, setDbDrivers] = useState<any[]>([]);
+  const [loadingDrivers, setLoadingDrivers] = useState(false);
+
+  const fetchDrivers = useCallback(async (vehicleType: string) => {
+    setLoadingDrivers(true);
+    const { data } = await supabase
+      .from("drivers")
+      .select("*")
+      .eq("vehicle_type", vehicleType)
+      .eq("is_available", true)
+      .limit(10);
+    setDbDrivers(data || []);
+    setLoadingDrivers(false);
+  }, []);
 
   const handleDriverSelect = (driver: { name: string; plate: string; phone: string }) => {
     setSelectedDriver(driver);
@@ -103,24 +119,13 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     setStep("payment");
   };
 
-  const sendWhatsAppNotification = (driverPhone: string) => {
+  const sendTelegramBookingNotification = (driverPhone: string) => {
     if (!selectedVehicle) return;
 
     const fare = calculateFare(selectedVehicle);
-    const locationUrl = `https://www.google.com/maps?q=23.2599,77.4126`;
 
-    // Message to admin (7479898265)
-    const adminMsg = `🚑 *New Booking Alert!*\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n🚗 Vehicle: ${selectedVehicle.name}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n💰 Fare: ₹${fare.toLocaleString()}\n💳 Payment: ${paymentMethod}\n📍 Live Location: ${locationUrl}`;
-    window.open(`https://wa.me/917479898265?text=${encodeURIComponent(adminMsg)}`, "_blank");
-
-    // Message to driver
-    const cleanPhone = driverPhone.replace(/[^0-9]/g, "");
-    if (cleanPhone) {
-      const driverMsg = `🚑 *New Ride Request!*\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n🚗 Vehicle: ${selectedVehicle.name}\n💰 Fare: ₹${fare.toLocaleString()}\n💳 Payment: ${paymentMethod}\n📍 Pickup Location: ${locationUrl}\n\nPlease confirm and head to pickup!`;
-      setTimeout(() => {
-        window.open(`https://wa.me/91${cleanPhone}?text=${encodeURIComponent(driverMsg)}`, "_blank");
-      }, 1000);
-    }
+    const msg = `🚑 <b>New Ambulance Booking!</b>\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n🚗 Vehicle: ${selectedVehicle.name}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n📞 Driver Phone: ${driverPhone}\n💰 Fare: ₹${fare.toLocaleString()}\n💳 Payment: ${paymentMethod}`;
+    sendTelegramNotification(msg);
   };
 
   const handlePayment = async () => {
@@ -143,8 +148,8 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
       });
     }
 
-    // Send WhatsApp notifications to admin and driver
-    sendWhatsAppNotification(selectedDriver?.phone || "");
+    // Send Telegram notification to admin
+    sendTelegramBookingNotification(selectedDriver?.phone || "");
 
     setStep("booked");
     toast({ title: "🚑 Ride Confirmed!", description: `Your ${selectedVehicle?.name} is on the way! Booking details sent via WhatsApp.` });
@@ -269,34 +274,46 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
 
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Available nearby</p>
 
-              {[
-                { name: "Rajesh Kumar", rating: 4.8, trips: 1240, eta: "3 min away", plate: "MP-09-AB-1234", photo: "RK", phone: "9876543210" },
-                { name: "Sunil Verma", rating: 4.6, trips: 890, eta: "5 min away", plate: "MP-09-CD-5678", photo: "SV", phone: "9876543211" },
-                { name: "Amit Sharma", rating: 4.9, trips: 2100, eta: "7 min away", plate: "MP-09-EF-9012", photo: "AS", phone: "9876543212" },
-              ].map((driver, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleDriverSelect({ name: driver.name, plate: driver.plate, phone: driver.phone })}
-                  className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-border hover:border-primary hover:bg-accent/30 transition-all text-left group"
-                >
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
-                    {driver.photo}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-semibold text-foreground text-sm">{driver.name}</h4>
-                      <span className="text-xs text-success font-medium">{driver.eta}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{driver.plate}</p>
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="text-xs text-foreground flex items-center gap-1">
-                        <Star className="w-3 h-3 text-warning fill-warning" /> {driver.rating}
-                      </span>
-                      <span className="text-xs text-muted-foreground">{driver.trips.toLocaleString()} trips</span>
-                    </div>
-                  </div>
-                </button>
-              ))}
+              {loadingDrivers ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  <span className="ml-2 text-sm text-muted-foreground">Finding drivers...</span>
+                </div>
+              ) : dbDrivers.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p className="text-sm">No drivers available for this vehicle type right now.</p>
+                  <p className="text-xs mt-1">Please try another vehicle or wait a moment.</p>
+                </div>
+              ) : (
+                dbDrivers.map((driver) => {
+                  const initials = driver.full_name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+                  const etaMin = Math.floor(Math.random() * 10) + 3;
+                  return (
+                    <button
+                      key={driver.id}
+                      onClick={() => handleDriverSelect({ name: driver.full_name, plate: driver.vehicle_number, phone: driver.whatsapp_number || driver.phone })}
+                      className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-border hover:border-primary hover:bg-accent/30 transition-all text-left group"
+                    >
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                        {initials}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-semibold text-foreground text-sm">{driver.full_name}</h4>
+                          <span className="text-xs text-success font-medium">{etaMin} min away</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{driver.vehicle_number}</p>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-xs text-foreground flex items-center gap-1">
+                            <Star className="w-3 h-3 text-warning fill-warning" /> {driver.rating || 4.5}
+                          </span>
+                          <span className="text-xs text-muted-foreground">{(driver.total_trips || 0).toLocaleString()} trips</span>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })
+              )}
             </div>
           )}
 
