@@ -89,6 +89,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
 
   const handleVehicleSelect = (vehicle: VehicleType) => {
     setSelectedVehicle(vehicle);
+    fetchDrivers(vehicle.id);
     setStep("drivers");
   };
 
