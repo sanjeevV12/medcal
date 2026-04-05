@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import RideTrackingView from "./RideTrackingView";
 import { sendTelegramNotification } from "@/lib/telegram";
+import BookingMap, { haversineDistance } from "./BookingMap";
 
 interface AmbulanceRequestSheetProps {
   open: boolean;
