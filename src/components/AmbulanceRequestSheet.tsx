@@ -90,11 +90,19 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
       toast({ title: "Enter both pickup and destination", variant: "destructive" });
       return;
     }
-    setDistanceKm(Math.floor(Math.random() * 15) + 3);
+    if (pickupCoords && destCoords) {
+      const dist = haversineDistance(pickupCoords.lat, pickupCoords.lng, destCoords.lat, destCoords.lng);
+      setDistanceKm(Math.max(1, Math.round(dist * 10) / 10));
+    } else {
+      setDistanceKm(Math.floor(Math.random() * 15) + 3);
+    }
     setStep("vehicle");
   };
 
-  const handleVehicleSelect = (vehicle: VehicleType) => {
+  const handleSelectDestination = useCallback((name: string, coords: { lat: number; lng: number }) => {
+    setDestination(name);
+    setDestCoords(coords);
+  }, []);
     setSelectedVehicle(vehicle);
     fetchDrivers(vehicle.id);
     setStep("drivers");
