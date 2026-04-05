@@ -124,7 +124,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
 
     const fare = calculateFare(selectedVehicle);
 
-    const msg = `🚑 <b>New Ambulance Booking!</b>\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n🚗 Vehicle: ${selectedVehicle.name}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n📞 Driver Phone: ${driverPhone}\n💰 Fare: ₹${fare.toLocaleString()}\n💳 Payment: ${paymentMethod}`;
+    const msg = `🚑 <b>New Ambulance Booking!</b>\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n📏 Distance: ${distanceKm} km\n🚗 Vehicle: ${selectedVehicle.name}\n💲 Rate: ₹${selectedVehicle.perKm}/km${selectedVehicle.baseFare > 0 ? `\n🏷️ Base Fare: ₹${selectedVehicle.baseFare.toLocaleString()}` : ''}\n💰 Total Fare: ₹${fare.toLocaleString()}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n📞 Driver Phone: ${driverPhone}\n💳 Payment: ${paymentMethod}`;
     sendTelegramNotification(msg);
   };
 
