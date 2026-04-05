@@ -64,12 +64,14 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
+          const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          setPickupCoords(coords);
           try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${coords.lat}&lon=${coords.lng}&format=json`);
             const data = await res.json();
-            setPickup(data.display_name?.split(",").slice(0, 3).join(",") || `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`);
+            setPickup(data.display_name?.split(",").slice(0, 3).join(",") || `${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`);
           } catch {
-            setPickup(`${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`);
+            setPickup(`${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`);
           }
           setDetectingLocation(false);
         },
