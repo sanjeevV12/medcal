@@ -54,6 +54,8 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
       setSelectedVehicle(null);
       setPickup("");
       setDestination("");
+      setPickupCoords(null);
+      setDestCoords(null);
     }
   }, [open]);
 
