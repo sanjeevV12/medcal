@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import RideTrackingView from "./RideTrackingView";
 import { sendTelegramNotification } from "@/lib/telegram";
+import BookingMap, { haversineDistance } from "./BookingMap";
 
 interface AmbulanceRequestSheetProps {
   open: boolean;
@@ -44,6 +45,8 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("upi");
   const [upiId, setUpiId] = useState("");
+  const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [destCoords, setDestCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -51,6 +54,8 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
       setSelectedVehicle(null);
       setPickup("");
       setDestination("");
+      setPickupCoords(null);
+      setDestCoords(null);
     }
   }, [open]);
 
@@ -59,12 +64,14 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
+          const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          setPickupCoords(coords);
           try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`);
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${coords.lat}&lon=${coords.lng}&format=json`);
             const data = await res.json();
-            setPickup(data.display_name?.split(",").slice(0, 3).join(",") || `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`);
+            setPickup(data.display_name?.split(",").slice(0, 3).join(",") || `${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`);
           } catch {
-            setPickup(`${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`);
+            setPickup(`${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`);
           }
           setDetectingLocation(false);
         },
@@ -83,9 +90,19 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
       toast({ title: "Enter both pickup and destination", variant: "destructive" });
       return;
     }
-    setDistanceKm(Math.floor(Math.random() * 15) + 3);
+    if (pickupCoords && destCoords) {
+      const dist = haversineDistance(pickupCoords.lat, pickupCoords.lng, destCoords.lat, destCoords.lng);
+      setDistanceKm(Math.max(1, Math.round(dist * 10) / 10));
+    } else {
+      setDistanceKm(Math.floor(Math.random() * 15) + 3);
+    }
     setStep("vehicle");
   };
+
+  const handleSelectDestination = useCallback((name: string, coords: { lat: number; lng: number }) => {
+    setDestination(name);
+    setDestCoords(coords);
+  }, []);
 
   const handleVehicleSelect = (vehicle: VehicleType) => {
     setSelectedVehicle(vehicle);
@@ -187,6 +204,13 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
           {/* Step 1: Location */}
           {step === "location" && (
             <div className="space-y-4">
+              {/* Map */}
+              <BookingMap
+                pickupCoords={pickupCoords}
+                onSelectDestination={handleSelectDestination}
+                selectedDestination={destCoords}
+              />
+
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-success" />
@@ -205,19 +229,13 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 </div>
               </div>
 
-              <div className="flex justify-center">
-                <div className="w-px h-6 bg-border relative">
-                  <div className="absolute -left-1 top-1/2 w-2.5 h-2.5 rounded-full border-2 border-muted-foreground bg-background" />
-                </div>
-              </div>
-
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-emergency" />
                   Destination (Hospital)
                 </label>
                 <Input
-                  placeholder="Enter hospital or destination"
+                  placeholder="Select hospital from map or type"
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
                 />
