@@ -204,6 +204,13 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
           {/* Step 1: Location */}
           {step === "location" && (
             <div className="space-y-4">
+              {/* Map */}
+              <BookingMap
+                pickupCoords={pickupCoords}
+                onSelectDestination={handleSelectDestination}
+                selectedDestination={destCoords}
+              />
+
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-success" />
@@ -222,19 +229,13 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 </div>
               </div>
 
-              <div className="flex justify-center">
-                <div className="w-px h-6 bg-border relative">
-                  <div className="absolute -left-1 top-1/2 w-2.5 h-2.5 rounded-full border-2 border-muted-foreground bg-background" />
-                </div>
-              </div>
-
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-emergency" />
                   Destination (Hospital)
                 </label>
                 <Input
-                  placeholder="Enter hospital or destination"
+                  placeholder="Select hospital from map or type"
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
                 />
