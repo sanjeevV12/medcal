@@ -103,6 +103,8 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     setDestination(name);
     setDestCoords(coords);
   }, []);
+
+  const handleVehicleSelect = (vehicle: VehicleType) => {
     setSelectedVehicle(vehicle);
     fetchDrivers(vehicle.id);
     setStep("drivers");
