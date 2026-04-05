@@ -124,7 +124,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
 
     const fare = calculateFare(selectedVehicle);
 
-    const msg = `🚑 <b>New Ambulance Booking!</b>\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n🚗 Vehicle: ${selectedVehicle.name}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n📞 Driver Phone: ${driverPhone}\n💰 Fare: ₹${fare.toLocaleString()}\n💳 Payment: ${paymentMethod}`;
+    const msg = `🚑 <b>New Ambulance Booking!</b>\n\n📍 Pickup: ${pickup}\n🏥 Destination: ${destination}\n📏 Distance: ${distanceKm} km\n🚗 Vehicle: ${selectedVehicle.name}\n💲 Rate: ₹${selectedVehicle.perKm}/km${selectedVehicle.baseFare > 0 ? `\n🏷️ Base Fare: ₹${selectedVehicle.baseFare.toLocaleString()}` : ''}\n💰 Total Fare: ₹${fare.toLocaleString()}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n📞 Driver Phone: ${driverPhone}\n💳 Payment: ${paymentMethod}`;
     sendTelegramNotification(msg);
   };
 
@@ -433,8 +433,9 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 <CheckCircle className="w-10 h-10 text-success" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-foreground">Ride Confirmed!</h3>
-                <p className="text-muted-foreground text-sm mt-1">Your {selectedVehicle.name} is being assigned</p>
+                <h3 className="text-xl font-bold text-foreground">Booking Confirmed!</h3>
+                <p className="text-primary font-semibold text-lg mt-1">Our team will contact you soon</p>
+                <p className="text-muted-foreground text-sm mt-1">We are assigning the nearest {selectedVehicle.name} to you</p>
               </div>
 
               <div className="bg-secondary rounded-xl p-4 text-left space-y-2">
@@ -443,16 +444,34 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                   <span className="font-medium text-foreground">{selectedVehicle.name}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">ETA</span>
-                  <span className="font-medium text-success">{selectedVehicle.eta}</span>
+                  <span className="text-muted-foreground">Distance</span>
+                  <span className="font-medium text-foreground">{distanceKm} km</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Fare</span>
-                  <span className="font-bold text-primary">₹{calculateFare(selectedVehicle).toLocaleString()}</span>
+                  <span className="text-muted-foreground">Rate</span>
+                  <span className="font-medium text-foreground">₹{selectedVehicle.perKm}/km</span>
+                </div>
+                {selectedVehicle.baseFare > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Base Fare</span>
+                    <span className="font-medium text-foreground">₹{selectedVehicle.baseFare.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="border-t border-border pt-2 flex justify-between font-bold">
+                  <span className="text-foreground">Total Fare</span>
+                  <span className="text-primary text-lg">₹{calculateFare(selectedVehicle).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Payment</span>
                   <span className="font-medium text-foreground capitalize">{paymentMethod}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Pickup</span>
+                  <span className="font-medium text-foreground text-right text-xs max-w-[200px] truncate">{pickup}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Destination</span>
+                  <span className="font-medium text-foreground text-right text-xs max-w-[200px] truncate">{destination}</span>
                 </div>
               </div>
 
@@ -461,16 +480,13 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                   <Phone className="w-5 h-5 text-primary" />
                 </div>
                 <div className="text-left">
-                  <p className="text-sm font-medium text-foreground">Driver details incoming</p>
-                  <p className="text-xs text-muted-foreground">You'll receive a call shortly</p>
+                  <p className="text-sm font-medium text-foreground">Our team will contact you soon</p>
+                  <p className="text-xs text-muted-foreground">You'll receive a call with driver details</p>
                 </div>
               </div>
 
-              <Button onClick={() => { onOpenChange(false); setShowTracking(true); }} className="w-full" size="lg" variant="emergency">
-                🗺️ Track Ambulance Live
-              </Button>
-              <Button onClick={() => onOpenChange(false)} variant="outline" className="w-full" size="lg">
-                Close
+              <Button onClick={() => onOpenChange(false)} className="w-full" size="lg">
+                Done
               </Button>
             </div>
           )}

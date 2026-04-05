@@ -24,7 +24,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <QuickActionBar onEmergencyAlert={() => setEmergencyOverlayOpen(true)} />
+      <QuickActionBar onEmergencyAlert={() => {}} />
       
       {/* Add padding for the sticky action bar */}
       <div className="pt-14">

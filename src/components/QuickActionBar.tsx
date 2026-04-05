@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { AlertCircle, Stethoscope } from "lucide-react";
+import { Stethoscope, Ambulance } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
 import BasicCareDialog from "./BasicCareDialog";
 
 interface QuickActionBarProps {
@@ -10,9 +9,7 @@ interface QuickActionBarProps {
 
 const QuickActionBar = ({ onEmergencyAlert }: QuickActionBarProps) => {
   const [basicCareOpen, setBasicCareOpen] = useState(false);
-  const [isLocating, setIsLocating] = useState(false);
 
-  // Listen for basic care open event from hero buttons
   useEffect(() => {
     const handleOpenBasicCare = () => {
       setBasicCareOpen(true);
@@ -21,42 +18,8 @@ const QuickActionBar = ({ onEmergencyAlert }: QuickActionBarProps) => {
     return () => window.removeEventListener('open-basic-care', handleOpenBasicCare);
   }, []);
 
-  const handleEmergencyAlert = () => {
-    setIsLocating(true);
-    toast({
-      title: "📍 Detecting Location...",
-      description: "Please wait while we find your exact location",
-    });
-
-    // Get user location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setIsLocating(false);
-          toast({
-            title: "✅ Location Found!",
-            description: `Lat: ${position.coords.latitude.toFixed(4)}, Lng: ${position.coords.longitude.toFixed(4)}`,
-          });
-          onEmergencyAlert();
-        },
-        () => {
-          setIsLocating(false);
-          toast({
-            title: "📍 Using Default Location",
-            description: "Location access denied. Using approximate location.",
-          });
-          onEmergencyAlert();
-        },
-        { enableHighAccuracy: true, timeout: 5000 }
-      );
-    } else {
-      setIsLocating(false);
-      onEmergencyAlert();
-    }
-  };
-
-  const handleBasicCare = () => {
-    setBasicCareOpen(true);
+  const handleRequestAmbulance = () => {
+    document.getElementById('request-ambulance-btn')?.click();
   };
 
   return (
@@ -68,18 +31,17 @@ const QuickActionBar = ({ onEmergencyAlert }: QuickActionBarProps) => {
               variant="emergency"
               size="default"
               className="flex-1 max-w-[180px] sm:max-w-xs gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4"
-              onClick={handleEmergencyAlert}
-              disabled={isLocating}
+              onClick={handleRequestAmbulance}
             >
-              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="truncate">{isLocating ? "Locating..." : "Emergency Alert"}</span>
+              <Ambulance className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="truncate">Request Ambulance</span>
             </Button>
             
             <Button
               variant="default"
               size="default"
               className="flex-1 max-w-[180px] sm:max-w-xs gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4"
-              onClick={handleBasicCare}
+              onClick={() => setBasicCareOpen(true)}
             >
               <Stethoscope className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="truncate">Get Basic Care</span>
