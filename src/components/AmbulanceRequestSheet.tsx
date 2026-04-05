@@ -245,12 +245,18 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <h4 className="font-semibold text-foreground">{vehicle.name}</h4>
-                      <span className="font-bold text-foreground">₹{calculateFare(vehicle).toLocaleString()}</span>
+                      <div className="text-right">
+                        <span className="font-bold text-primary text-lg">₹{vehicle.perKm}</span>
+                        <span className="text-xs text-muted-foreground">/km</span>
+                      </div>
                     </div>
                     <p className="text-xs text-muted-foreground">{vehicle.description}</p>
                     <div className="flex items-center gap-3 mt-1">
                       <span className="text-xs text-success flex items-center gap-1">
                         <Clock className="w-3 h-3" /> {vehicle.eta}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        Est. ₹{calculateFare(vehicle).toLocaleString()} for {distanceKm} km
                       </span>
                     </div>
                   </div>
