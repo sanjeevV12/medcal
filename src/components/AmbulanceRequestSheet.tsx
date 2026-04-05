@@ -25,12 +25,12 @@ type VehicleType = {
 };
 
 const vehicleTypes: VehicleType[] = [
-  { id: "medi-bike", name: "Medi-Bike", icon: <Bike className="w-6 h-6" />, description: "First aid & rapid response", baseFare: 99, perKm: 8, eta: "4-6 min", color: "text-primary" },
-  { id: "medi-auto", name: "Medi-Auto", icon: <Truck className="w-5 h-5" />, description: "Narrow streets, basic care", baseFare: 199, perKm: 12, eta: "6-8 min", color: "text-primary" },
-  { id: "mayuri", name: "Mayuri Van", icon: <Car className="w-6 h-6" />, description: "Patient transport, stretcher", baseFare: 499, perKm: 18, eta: "8-12 min", color: "text-accent-foreground" },
-  { id: "bls", name: "BLS Ambulance", icon: <Truck className="w-6 h-6" />, description: "Basic Life Support equipped", baseFare: 999, perKm: 25, eta: "10-15 min", color: "text-warning" },
-  { id: "als", name: "ALS Ambulance", icon: <Truck className="w-6 h-6" />, description: "Advanced Life Support, ICU", baseFare: 2499, perKm: 40, eta: "12-18 min", color: "text-emergency" },
-  { id: "air", name: "Air Ambulance", icon: <Plane className="w-6 h-6" />, description: "Helicopter, critical cases", baseFare: 50000, perKm: 500, eta: "20-30 min", color: "text-emergency" },
+  { id: "medi-bike", name: "Medi-Bike", icon: <Bike className="w-6 h-6" />, description: "First aid & rapid response", baseFare: 0, perKm: 30, eta: "4-6 min", color: "text-primary" },
+  { id: "medi-auto", name: "Medi-Auto", icon: <Truck className="w-5 h-5" />, description: "Narrow streets, basic care", baseFare: 0, perKm: 35, eta: "6-8 min", color: "text-primary" },
+  { id: "mayuri", name: "Mayuri Van", icon: <Car className="w-6 h-6" />, description: "Patient transport, stretcher", baseFare: 0, perKm: 40, eta: "8-12 min", color: "text-accent-foreground" },
+  { id: "bls", name: "BLS Ambulance", icon: <Truck className="w-6 h-6" />, description: "Basic Life Support equipped", baseFare: 0, perKm: 45, eta: "10-15 min", color: "text-warning" },
+  { id: "als", name: "ALS Ambulance", icon: <Truck className="w-6 h-6" />, description: "Advanced Life Support, ICU", baseFare: 0, perKm: 50, eta: "12-18 min", color: "text-emergency" },
+  { id: "air", name: "Air Ambulance", icon: <Plane className="w-6 h-6" />, description: "Helicopter, critical cases", baseFare: 5000, perKm: 55, eta: "20-30 min", color: "text-emergency" },
 ];
 
 type PaymentMethod = "upi" | "card" | "cash";
