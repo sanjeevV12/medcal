@@ -354,13 +354,15 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
               </div>
 
               <div className="bg-secondary rounded-xl p-4 space-y-2">
+                {selectedVehicle.baseFare > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Base fare</span>
+                    <span className="text-foreground">₹{selectedVehicle.baseFare.toLocaleString()}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Base fare</span>
-                  <span className="text-foreground">₹{selectedVehicle.baseFare}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Distance ({distanceKm} km × ₹{selectedVehicle.perKm})</span>
-                  <span className="text-foreground">₹{selectedVehicle.perKm * distanceKm}</span>
+                  <span className="text-muted-foreground">Distance ({distanceKm} km × ₹{selectedVehicle.perKm}/km)</span>
+                  <span className="text-foreground">₹{(selectedVehicle.perKm * distanceKm).toLocaleString()}</span>
                 </div>
                 <div className="border-t border-border pt-2 flex justify-between font-bold">
                   <span className="text-foreground">Total Estimate</span>
