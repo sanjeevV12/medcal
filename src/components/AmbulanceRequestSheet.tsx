@@ -127,6 +127,31 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     setLoadingDrivers(false);
   }, []);
 
+  // Real-time driver availability subscription
+  useEffect(() => {
+    if (!selectedVehicle || step !== "drivers") return;
+
+    const channel = supabase
+      .channel('driver-availability')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'drivers',
+          filter: `vehicle_type=eq.${selectedVehicle.id}`,
+        },
+        () => {
+          fetchDrivers(selectedVehicle.id);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedVehicle, step, fetchDrivers]);
+
   const handleDriverSelect = (driver: { name: string; plate: string; phone: string }) => {
     setSelectedDriver(driver);
     setStep("confirm");
