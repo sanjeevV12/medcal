@@ -212,7 +212,15 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
               )}
               {step === "location" && "Where do you need help?"}
               {step === "vehicle" && "Choose Vehicle"}
-              {step === "drivers" && "Available Nearby"}
+              {step === "drivers" && (
+                <span className="flex items-center gap-2">
+                  Available Nearby
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/20 text-green-300 text-xs font-medium">
+                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                    LIVE
+                  </span>
+                </span>
+              )}
               {step === "confirm" && "Confirm Ride"}
               {step === "payment" && "Payment"}
               {step === "booked" && "Ride Confirmed!"}
