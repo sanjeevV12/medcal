@@ -263,10 +263,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <h4 className="font-semibold text-foreground">{vehicle.name}</h4>
-                      <div className="text-right">
-                        <span className="font-bold text-primary text-lg">₹{vehicle.perKm}</span>
-                        <span className="text-xs text-muted-foreground">/km</span>
-                      </div>
+                      <span className="font-bold text-primary text-lg">₹{calculateFare(vehicle).toLocaleString()}</span>
                     </div>
                     <p className="text-xs text-muted-foreground">{vehicle.description}</p>
                     <div className="flex items-center gap-3 mt-1">
@@ -274,7 +271,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                         <Clock className="w-3 h-3" /> {vehicle.eta}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        Est. ₹{calculateFare(vehicle).toLocaleString()} for {distanceKm} km
+                        {distanceKm} km distance
                       </span>
                     </div>
                   </div>
@@ -292,7 +289,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">{selectedVehicle.name}</p>
-                  <p className="text-xs text-muted-foreground">₹{calculateFare(selectedVehicle).toLocaleString()} estimated</p>
+                  <p className="text-xs text-muted-foreground">Est. fare: ₹{calculateFare(selectedVehicle).toLocaleString()}</p>
                 </div>
               </div>
 
@@ -312,19 +309,24 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 dbDrivers.map((driver) => {
                   const initials = driver.full_name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
                   const etaMin = Math.floor(Math.random() * 10) + 3;
+                  const isAvailable = driver.is_available !== false;
                   return (
                     <button
                       key={driver.id}
-                      onClick={() => handleDriverSelect({ name: driver.full_name, plate: driver.vehicle_number, phone: driver.whatsapp_number || driver.phone })}
-                      className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-border hover:border-primary hover:bg-accent/30 transition-all text-left group"
+                      onClick={() => isAvailable && handleDriverSelect({ name: driver.full_name, plate: driver.vehicle_number, phone: driver.whatsapp_number || driver.phone })}
+                      disabled={!isAvailable}
+                      className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left group ${isAvailable ? "border-border hover:border-primary hover:bg-accent/30" : "border-border/50 opacity-50 cursor-not-allowed"}`}
                     >
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0 relative">
                         {initials}
+                        <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-background ${isAvailable ? "bg-green-500" : "bg-muted-foreground"}`} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <h4 className="font-semibold text-foreground text-sm">{driver.full_name}</h4>
-                          <span className="text-xs text-success font-medium">{etaMin} min away</span>
+                          <span className={`text-xs font-medium ${isAvailable ? "text-success" : "text-muted-foreground"}`}>
+                            {isAvailable ? `${etaMin} min away` : "Busy"}
+                          </span>
                         </div>
                         <p className="text-xs text-muted-foreground">{driver.vehicle_number}</p>
                         <div className="flex items-center gap-3 mt-1">
@@ -332,6 +334,9 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                             <Star className="w-3 h-3 text-warning fill-warning" /> {driver.rating || 4.5}
                           </span>
                           <span className="text-xs text-muted-foreground">{(driver.total_trips || 0).toLocaleString()} trips</span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${isAvailable ? "bg-success/20 text-success" : "bg-muted text-muted-foreground"}`}>
+                            {isAvailable ? "Available" : "Unavailable"}
+                          </span>
                         </div>
                       </div>
                     </button>
@@ -379,8 +384,8 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Distance ({distanceKm} km × ₹{selectedVehicle.perKm}/km)</span>
-                  <span className="text-foreground">₹{(selectedVehicle.perKm * distanceKm).toLocaleString()}</span>
+                  <span className="text-muted-foreground">Distance</span>
+                  <span className="text-foreground">{distanceKm} km</span>
                 </div>
                 <div className="border-t border-border pt-2 flex justify-between font-bold">
                   <span className="text-foreground">Total Estimate</span>
@@ -464,10 +469,6 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Distance</span>
                   <span className="font-medium text-foreground">{distanceKm} km</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Rate</span>
-                  <span className="font-medium text-foreground">₹{selectedVehicle.perKm}/km</span>
                 </div>
                 {selectedVehicle.baseFare > 0 && (
                   <div className="flex justify-between text-sm">
