@@ -121,7 +121,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
       .from("drivers")
       .select("*")
       .eq("vehicle_type", vehicleType)
-      .eq("is_available", true)
+      .order("is_available", { ascending: false })
       .limit(10);
     setDbDrivers(data || []);
     setLoadingDrivers(false);
