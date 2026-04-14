@@ -27,12 +27,12 @@ type VehicleType = {
 };
 
 const vehicleTypes: VehicleType[] = [
-  { id: "medi-bike", name: "Medi-Bike", icon: <Bike className="w-6 h-6" />, description: "First aid & rapid response", baseFare: 0, perKm: 30, eta: "4-6 min", color: "text-primary" },
-  { id: "medi-auto", name: "Medi-Auto", icon: <Truck className="w-5 h-5" />, description: "Narrow streets, basic care", baseFare: 0, perKm: 35, eta: "6-8 min", color: "text-primary" },
-  { id: "mayuri", name: "Mayuri Van", icon: <Car className="w-6 h-6" />, description: "Patient transport, stretcher", baseFare: 0, perKm: 40, eta: "8-12 min", color: "text-accent-foreground" },
-  { id: "bls", name: "BLS Ambulance", icon: <Truck className="w-6 h-6" />, description: "Basic Life Support equipped", baseFare: 0, perKm: 45, eta: "10-15 min", color: "text-warning" },
-  { id: "als", name: "ALS Ambulance", icon: <Truck className="w-6 h-6" />, description: "Advanced Life Support, ICU", baseFare: 0, perKm: 50, eta: "12-18 min", color: "text-emergency" },
-  { id: "air", name: "Air Ambulance", icon: <Plane className="w-6 h-6" />, description: "Helicopter, critical cases", baseFare: 5000, perKm: 55, eta: "20-30 min", color: "text-emergency" },
+  { id: "medi-bike", name: "Medi-Bike", icon: <Bike className="w-6 h-6" />, description: "First aid & rapid response", baseFare: 0, perKm: 50, eta: "", color: "text-primary" },
+  { id: "medi-auto", name: "Medi-Auto", icon: <Truck className="w-5 h-5" />, description: "Narrow streets, basic care", baseFare: 0, perKm: 55, eta: "", color: "text-primary" },
+  { id: "mayuri", name: "Mayuri Van", icon: <Car className="w-6 h-6" />, description: "Patient transport, stretcher", baseFare: 0, perKm: 60, eta: "", color: "text-accent-foreground" },
+  { id: "bls", name: "BLS Ambulance", icon: <Truck className="w-6 h-6" />, description: "Basic Life Support equipped", baseFare: 0, perKm: 65, eta: "", color: "text-warning" },
+  { id: "als", name: "ALS Ambulance", icon: <Truck className="w-6 h-6" />, description: "Advanced Life Support, ICU", baseFare: 0, perKm: 70, eta: "", color: "text-emergency" },
+  { id: "air", name: "Air Ambulance", icon: <Plane className="w-6 h-6" />, description: "Helicopter, critical cases", baseFare: 5000, perKm: 75, eta: "", color: "text-emergency" },
 ];
 
 type PaymentMethod = "upi" | "card" | "cash";
@@ -61,6 +61,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
   const [dbDrivers, setDbDrivers] = useState<any[]>([]);
   const [loadingDrivers, setLoadingDrivers] = useState(false);
   const [nearbyHospital, setNearbyHospital] = useState<{ name: string; distance: number } | null>(null);
+  const [nearestDriverDistances, setNearestDriverDistances] = useState<Record<string, number>>({});
 
   // Map refs
   const mapRef = useRef<HTMLDivElement>(null);
@@ -206,15 +207,21 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
       markerRefs.push({ marker, basePos: [vLat, vLng], angle: Math.random() * Math.PI * 2 });
     });
 
-    // Animate vehicle movement
+    // Animate vehicle movement with smooth trajectories toward user
     const animateInterval = setInterval(() => {
       markerRefs.forEach((ref) => {
-        ref.angle += 0.03 + Math.random() * 0.02;
-        const newLat = ref.basePos[0] + Math.sin(ref.angle) * 0.002;
-        const newLng = ref.basePos[1] + Math.cos(ref.angle) * 0.002;
+        ref.angle += 0.04 + Math.random() * 0.03;
+        // Drift toward user with orbital motion
+        const driftLat = (lat - ref.basePos[0]) * 0.002;
+        const driftLng = (lng - ref.basePos[1]) * 0.002;
+        ref.basePos[0] += driftLat;
+        ref.basePos[1] += driftLng;
+        const radius = 0.003 + Math.sin(ref.angle * 0.5) * 0.001;
+        const newLat = ref.basePos[0] + Math.sin(ref.angle) * radius;
+        const newLng = ref.basePos[1] + Math.cos(ref.angle * 0.8) * radius;
         ref.marker.setLatLng([newLat, newLng]);
       });
-    }, 800);
+    }, 600);
 
     // Store for cleanup
     (map as any)._vehicleAnimInterval = animateInterval;
@@ -228,6 +235,43 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
       mapInstance.current.setView([userCoords.lat, userCoords.lng], 14);
     }
   }, [userCoords]);
+
+  // Fetch nearest driver distances for ETA calculation
+  useEffect(() => {
+    if (!open || detectingLocation) return;
+    const fetchDriverDistances = async () => {
+      const { data } = await supabase
+        .from("drivers")
+        .select("vehicle_type, latitude, longitude, is_available")
+        .eq("is_available", true)
+        .not("latitude", "is", null)
+        .not("longitude", "is", null);
+      if (!data) return;
+      const distances: Record<string, number> = {};
+      vehicleTypes.forEach((v) => {
+        const typeDrivers = data.filter((d) => d.vehicle_type === v.id);
+        if (typeDrivers.length > 0) {
+          const nearest = typeDrivers.reduce((min, d) => {
+            const dist = haversineDistance(userCoords.lat, userCoords.lng, Number(d.latitude), Number(d.longitude));
+            return dist < min ? dist : min;
+          }, Infinity);
+          distances[v.id] = nearest;
+        }
+      });
+      setNearestDriverDistances(distances);
+    };
+    fetchDriverDistances();
+  }, [open, detectingLocation, userCoords]);
+
+  const getDriverEta = (vehicleId: string): string => {
+    const dist = nearestDriverDistances[vehicleId];
+    if (dist === undefined) return "~10 min";
+    // Assume avg speed: bike 40km/h, auto 30km/h, van 35km/h, ambulance 45km/h, air 120km/h
+    const speeds: Record<string, number> = { "medi-bike": 40, "medi-auto": 30, "mayuri": 35, "bls": 45, "als": 45, "air": 120 };
+    const speed = speeds[vehicleId] || 35;
+    const etaMin = Math.max(1, Math.round((dist / speed) * 60));
+    return `${etaMin} min`;
+  };
 
   const calculateFare = (vehicle: VehicleType) => vehicle.baseFare + vehicle.perKm * distanceKm;
 
@@ -386,8 +430,13 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                         <p className="text-xs text-muted-foreground">{vehicle.description}</p>
                         <div className="flex items-center gap-3 mt-1">
                           <span className="text-xs text-success flex items-center gap-1">
-                            <Clock className="w-3 h-3" /> {vehicle.eta}
+                            <Clock className="w-3 h-3" /> ETA: {getDriverEta(vehicle.id)}
                           </span>
+                          {nearestDriverDistances[vehicle.id] !== undefined && (
+                            <span className="text-xs text-muted-foreground">
+                              📍 {nearestDriverDistances[vehicle.id].toFixed(1)} km away
+                            </span>
+                          )}
                         </div>
                       </div>
                     </button>
@@ -424,7 +473,8 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 ) : (
                   dbDrivers.map((driver) => {
                     const initials = driver.full_name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
-                    const etaMin = Math.floor(Math.random() * 10) + 3;
+                    const driverDist = (driver.latitude && driver.longitude) ? haversineDistance(userCoords.lat, userCoords.lng, Number(driver.latitude), Number(driver.longitude)) : null;
+                    const etaMin = driverDist ? Math.max(1, Math.round((driverDist / 35) * 60)) : Math.floor(Math.random() * 10) + 3;
                     const isAvailable = driver.is_available !== false;
                     return (
                       <button
@@ -517,7 +567,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-success/10">
                   <Clock className="w-5 h-5 text-success" />
                   <div>
-                    <p className="text-sm font-medium text-foreground">Estimated arrival: {selectedVehicle.eta}</p>
+                    <p className="text-sm font-medium text-foreground">Estimated arrival: {getDriverEta(selectedVehicle.id)}</p>
                     <p className="text-xs text-muted-foreground">Driver: {selectedDriver?.name}</p>
                   </div>
                 </div>
