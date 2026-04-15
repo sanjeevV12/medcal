@@ -310,8 +310,14 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     setStep("confirm");
   };
 
+  const sendTelegramBookingNotification = (driverPhone: string) => {
+    if (!selectedVehicle) return;
+    const fare = calculateFare(selectedVehicle);
+    const msg = `🚑 <b>New Ambulance Booking!</b>\n\n📍 Location: ${userAddress}\n📏 Distance: ${distanceKm} km\n🚗 Vehicle: ${selectedVehicle.name}\n💰 Total Fare: ₹${fare.toLocaleString()}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n📞 Driver Phone: ${driverPhone}\n💳 Payment: Pay after service`;
+    sendTelegramNotification(msg);
+  };
+
   const handleConfirmRide = async () => {
-    // Save ride request and move to booked/tracking state
     const { data: { user } } = await supabase.auth.getUser();
     if (user && selectedVehicle) {
       await supabase.from("ride_requests").insert({
