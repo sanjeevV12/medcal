@@ -458,7 +458,12 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                   </div>
                 </div>
 
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Available nearby</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Available nearby</p>
+                  <span className="text-xs font-semibold text-success">
+                    {dbDrivers.filter(d => d.is_available !== false).length} of {dbDrivers.length} available
+                  </span>
+                </div>
 
                 {loadingDrivers ? (
                   <div className="flex items-center justify-center py-8">
