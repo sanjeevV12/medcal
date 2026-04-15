@@ -310,20 +310,8 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     setStep("confirm");
   };
 
-  const handleConfirmRide = () => setStep("payment");
-
-  const sendTelegramBookingNotification = (driverPhone: string) => {
-    if (!selectedVehicle) return;
-    const fare = calculateFare(selectedVehicle);
-    const msg = `🚑 <b>New Ambulance Booking!</b>\n\n📍 Location: ${userAddress}\n📏 Distance: ${distanceKm} km\n🚗 Vehicle: ${selectedVehicle.name}\n💰 Total Fare: ₹${fare.toLocaleString()}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n📞 Driver Phone: ${driverPhone}\n💳 Payment: ${paymentMethod}`;
-    sendTelegramNotification(msg);
-  };
-
-  const handlePayment = async () => {
-    if (paymentMethod === "upi" && !upiId) {
-      toast({ title: "Enter UPI ID", variant: "destructive" });
-      return;
-    }
+  const handleConfirmRide = async () => {
+    // Save ride request and move to booked/tracking state
     const { data: { user } } = await supabase.auth.getUser();
     if (user && selectedVehicle) {
       await supabase.from("ride_requests").insert({
@@ -333,13 +321,25 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
         ride_type: selectedVehicle.id,
         fare_estimate: calculateFare(selectedVehicle),
         distance_km: distanceKm,
-        payment_method: paymentMethod,
-        status: "searching",
+        payment_method: "pending",
+        payment_status: "pending",
+        status: "confirmed",
       });
     }
     sendTelegramBookingNotification(selectedDriver?.phone || "");
     setStep("booked");
     toast({ title: "🚑 Ride Confirmed!", description: `Your ${selectedVehicle?.name} is on the way!` });
+  };
+
+  const handleCompleteRide = () => setStep("complete");
+
+  const handlePayment = async () => {
+    if (paymentMethod === "upi" && !upiId) {
+      toast({ title: "Enter UPI ID", variant: "destructive" });
+      return;
+    }
+    setStep("done");
+    toast({ title: "✅ Payment Successful!", description: `₹${selectedVehicle ? calculateFare(selectedVehicle).toLocaleString() : 0} paid via ${paymentMethod}` });
   };
 
   return (
