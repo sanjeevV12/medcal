@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin, Ambulance, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin, Star, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Footer = () => {
@@ -9,9 +9,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center">
-                <Ambulance className="w-5 h-5 text-primary-foreground" />
-              </div>
+              <img src="/logo.jpeg" alt="mASSI Logo" className="w-10 h-10 rounded-xl object-cover" />
               <span className="text-xl font-bold">mASSI</span>
             </div>
             <p className="text-background/70 mb-6">
@@ -81,18 +79,40 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Emergency CTA */}
+          {/* Prime Membership */}
           <div>
-            <h3 className="text-lg font-semibold mb-6">Need Help Now?</h3>
-            <p className="text-background/70 mb-6">
-              In case of emergency, don't wait. Press the button below or call our emergency hotline.
-            </p>
-            <Button variant="emergency" size="lg" className="w-full" asChild>
-              <a href="tel:+917479898265">
-                <Phone className="w-5 h-5" />
-                Call: +91-7479898265
-              </a>
-            </Button>
+            <h3 className="text-lg font-semibold mb-6">Be a Prime Member</h3>
+            <div className="bg-primary/20 rounded-2xl p-5 border border-primary/30">
+              <div className="flex items-center gap-2 mb-3">
+                <Star className="w-5 h-5 text-warning" />
+                <span className="font-bold text-lg">mASSI Prime</span>
+              </div>
+              <div className="mb-3">
+                <span className="text-3xl font-bold text-primary">₹249</span>
+                <span className="text-background/70 text-sm">/person/month</span>
+              </div>
+              <ul className="space-y-2 text-sm text-background/80 mb-4">
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-primary" />
+                  Priority ambulance dispatch
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-primary" />
+                  Free doctor consultations
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-primary" />
+                  10% off all services
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-primary" />
+                  24/7 dedicated support
+                </li>
+              </ul>
+              <Button variant="default" size="sm" className="w-full">
+                Join Prime
+              </Button>
+            </div>
           </div>
         </div>
 
