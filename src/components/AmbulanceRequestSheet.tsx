@@ -356,8 +356,8 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
           <div className="bg-gradient-hero p-5 text-primary-foreground">
             <DialogHeader>
               <DialogTitle className="text-primary-foreground flex items-center gap-2 text-lg">
-                {step !== "vehicle" && step !== "booked" && (
-                  <button onClick={() => setStep(step === "drivers" ? "vehicle" : step === "confirm" ? "drivers" : step === "payment" ? "confirm" : "vehicle")} className="p-1 rounded-full hover:bg-primary-foreground/20">
+                {step !== "vehicle" && step !== "booked" && step !== "complete" && step !== "done" && (
+                  <button onClick={() => setStep(step === "drivers" ? "vehicle" : step === "confirm" ? "drivers" : step === "payment" ? "complete" : "vehicle")} className="p-1 rounded-full hover:bg-primary-foreground/20">
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                 )}
@@ -365,15 +365,17 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 {step === "drivers" && (
                   <span className="flex items-center gap-2">
                     Available Nearby
-                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/20 text-green-300 text-xs font-medium">
-                      <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/20 text-success text-xs font-medium">
+                      <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
                       LIVE
                     </span>
                   </span>
                 )}
                 {step === "confirm" && "Confirm Ride"}
-                {step === "payment" && "Payment"}
-                {step === "booked" && "Ride Confirmed!"}
+                {step === "booked" && "🚑 Ride In Progress"}
+                {step === "complete" && "Ride Completed"}
+                {step === "payment" && "Pay for Service"}
+                {step === "done" && "Payment Complete"}
               </DialogTitle>
             </DialogHeader>
             {step === "vehicle" && (
