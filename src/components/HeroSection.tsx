@@ -48,8 +48,8 @@ const HeroSection = () => {
               </div>
               <div className="w-px h-12 bg-primary-foreground/20" />
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-foreground">₹499</div>
-                <div className="text-sm text-primary-foreground/70">Basic Care</div>
+                <div className="text-3xl font-bold text-primary-foreground">₹199</div>
+                <div className="text-sm text-primary-foreground/70">First Aid</div>
               </div>
               <div className="w-px h-12 bg-primary-foreground/20" />
               <div className="text-center">

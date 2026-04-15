@@ -479,9 +479,25 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                     <span className="ml-2 text-sm text-muted-foreground">Finding drivers...</span>
                   </div>
                 ) : dbDrivers.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <p className="text-sm">No drivers available for this vehicle type right now.</p>
-                    <p className="text-xs mt-1">Please try another vehicle or wait a moment.</p>
+                  <div className="text-center py-8 space-y-4">
+                    <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-8 h-8 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">Your booking is confirmed!</p>
+                      <p className="text-xs text-muted-foreground mt-1">A driver is being assigned and will be on the way shortly.</p>
+                    </div>
+                    <div className="bg-accent/20 rounded-xl p-3 text-xs text-foreground">
+                      <p className="font-medium">🚑 Driver is on the way</p>
+                      <p className="text-muted-foreground mt-1">You'll receive a notification once assigned. Our team is dispatching the nearest available driver.</p>
+                    </div>
+                    <Button onClick={() => {
+                      sendTelegramBookingNotification("auto-dispatch");
+                      toast({ title: "🚑 Booking Confirmed!", description: "A driver will be assigned shortly. You'll be notified." });
+                      onOpenChange(false);
+                    }} className="w-full">
+                      Confirm Booking
+                    </Button>
                   </div>
                 ) : (
                   [...dbDrivers].sort((a, b) => (b.is_available === true ? 1 : 0) - (a.is_available === true ? 1 : 0)).map((driver) => {

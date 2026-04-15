@@ -218,7 +218,7 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
         booking_time: new Date().toLocaleTimeString(),
         status: 'completed',
         payment_method: paymentMethod,
-        amount: '₹499',
+        amount: '₹199',
         address: 'Current Location - Bhopal',
         notes: 'Basic Care Service'
       });
@@ -232,7 +232,7 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
       phone: '+91XXXXXXXXXX',
       name: 'User',
       serviceType: 'Basic Care',
-      amount: '₹499'
+      amount: '₹199'
     });
 
     // Send service complete notification
@@ -487,7 +487,7 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
               <div className="mt-4 pt-3 border-t">
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Estimated Cost</span>
-                  <span className="text-xl font-bold text-primary">₹499</span>
+                  <span className="text-xl font-bold text-primary">₹199</span>
                 </div>
               </div>
             </div>
@@ -498,7 +498,7 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
                 className="w-full"
                 onClick={() => setShowPayment(true)}
               >
-                Proceed to Payment - ₹499
+                Proceed to Payment - ₹199
               </Button>
             )}
 
@@ -506,8 +506,8 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
             {showPayment && !paymentComplete && (
               <div className="bg-card rounded-xl p-4 border animate-fade-in space-y-4">
                 <div className="bg-primary/10 p-3 rounded-lg">
-                  <p className="text-sm text-muted-foreground">Amount to Pay</p>
-                  <p className="text-2xl font-bold text-primary">₹499</p>
+                   <p className="text-sm text-muted-foreground">Amount to Pay</p>
+                   <p className="text-2xl font-bold text-primary">₹199</p>
                 </div>
 
                 <p className="font-medium text-foreground text-sm">Select Payment Method</p>
@@ -634,7 +634,7 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
                     Back
                   </Button>
                   <Button onClick={handlePayment} className="flex-1" size="sm">
-                    {paymentMethod === 'cod' ? 'Confirm' : 'Pay ₹499'}
+                    {paymentMethod === 'cod' ? 'Confirm' : 'Pay ₹199'}
                   </Button>
                 </div>
               </div>
@@ -653,7 +653,7 @@ const BasicCareDialog = ({ open, onOpenChange }: BasicCareDialogProps) => {
                 <div className="bg-secondary/50 p-3 rounded-lg text-left space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Amount</span>
-                    <span className="font-medium text-foreground">₹499</span>
+                    <span className="font-medium text-foreground">₹199</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Payment</span>
