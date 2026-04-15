@@ -476,7 +476,7 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                     <p className="text-xs mt-1">Please try another vehicle or wait a moment.</p>
                   </div>
                 ) : (
-                  dbDrivers.map((driver) => {
+                  [...dbDrivers].sort((a, b) => (b.is_available === true ? 1 : 0) - (a.is_available === true ? 1 : 0)).map((driver) => {
                     const initials = driver.full_name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
                     const driverDist = (driver.latitude && driver.longitude) ? haversineDistance(userCoords.lat, userCoords.lng, Number(driver.latitude), Number(driver.longitude)) : null;
                     const etaMin = driverDist ? Math.max(1, Math.round((driverDist / 35) * 60)) : Math.floor(Math.random() * 10) + 3;
