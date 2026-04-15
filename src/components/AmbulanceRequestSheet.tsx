@@ -48,7 +48,7 @@ const haversineDistance = (lat1: number, lng1: number, lat2: number, lng2: numbe
 };
 
 const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProps) => {
-  const [step, setStep] = useState<"vehicle" | "drivers" | "confirm" | "payment" | "booked">("vehicle");
+  const [step, setStep] = useState<"vehicle" | "drivers" | "confirm" | "booked" | "complete" | "payment" | "done">("vehicle");
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleType | null>(null);
   const [distanceKm, setDistanceKm] = useState(5);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("upi");
@@ -310,20 +310,14 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     setStep("confirm");
   };
 
-  const handleConfirmRide = () => setStep("payment");
-
   const sendTelegramBookingNotification = (driverPhone: string) => {
     if (!selectedVehicle) return;
     const fare = calculateFare(selectedVehicle);
-    const msg = `🚑 <b>New Ambulance Booking!</b>\n\n📍 Location: ${userAddress}\n📏 Distance: ${distanceKm} km\n🚗 Vehicle: ${selectedVehicle.name}\n💰 Total Fare: ₹${fare.toLocaleString()}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n📞 Driver Phone: ${driverPhone}\n💳 Payment: ${paymentMethod}`;
+    const msg = `🚑 <b>New Ambulance Booking!</b>\n\n📍 Location: ${userAddress}\n📏 Distance: ${distanceKm} km\n🚗 Vehicle: ${selectedVehicle.name}\n💰 Total Fare: ₹${fare.toLocaleString()}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n📞 Driver Phone: ${driverPhone}\n💳 Payment: Pay after service`;
     sendTelegramNotification(msg);
   };
 
-  const handlePayment = async () => {
-    if (paymentMethod === "upi" && !upiId) {
-      toast({ title: "Enter UPI ID", variant: "destructive" });
-      return;
-    }
+  const handleConfirmRide = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user && selectedVehicle) {
       await supabase.from("ride_requests").insert({
@@ -333,13 +327,25 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
         ride_type: selectedVehicle.id,
         fare_estimate: calculateFare(selectedVehicle),
         distance_km: distanceKm,
-        payment_method: paymentMethod,
-        status: "searching",
+        payment_method: "pending",
+        payment_status: "pending",
+        status: "confirmed",
       });
     }
     sendTelegramBookingNotification(selectedDriver?.phone || "");
     setStep("booked");
     toast({ title: "🚑 Ride Confirmed!", description: `Your ${selectedVehicle?.name} is on the way!` });
+  };
+
+  const handleCompleteRide = () => setStep("complete");
+
+  const handlePayment = async () => {
+    if (paymentMethod === "upi" && !upiId) {
+      toast({ title: "Enter UPI ID", variant: "destructive" });
+      return;
+    }
+    setStep("done");
+    toast({ title: "✅ Payment Successful!", description: `₹${selectedVehicle ? calculateFare(selectedVehicle).toLocaleString() : 0} paid via ${paymentMethod}` });
   };
 
   return (
@@ -350,8 +356,8 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
           <div className="bg-gradient-hero p-5 text-primary-foreground">
             <DialogHeader>
               <DialogTitle className="text-primary-foreground flex items-center gap-2 text-lg">
-                {step !== "vehicle" && step !== "booked" && (
-                  <button onClick={() => setStep(step === "drivers" ? "vehicle" : step === "confirm" ? "drivers" : step === "payment" ? "confirm" : "vehicle")} className="p-1 rounded-full hover:bg-primary-foreground/20">
+                {step !== "vehicle" && step !== "booked" && step !== "complete" && step !== "done" && (
+                  <button onClick={() => setStep(step === "drivers" ? "vehicle" : step === "confirm" ? "drivers" : step === "payment" ? "complete" : "vehicle")} className="p-1 rounded-full hover:bg-primary-foreground/20">
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                 )}
@@ -359,15 +365,17 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 {step === "drivers" && (
                   <span className="flex items-center gap-2">
                     Available Nearby
-                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/20 text-green-300 text-xs font-medium">
-                      <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/20 text-success text-xs font-medium">
+                      <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
                       LIVE
                     </span>
                   </span>
                 )}
                 {step === "confirm" && "Confirm Ride"}
-                {step === "payment" && "Payment"}
-                {step === "booked" && "Ride Confirmed!"}
+                {step === "booked" && "🚑 Ride In Progress"}
+                {step === "complete" && "Ride Completed"}
+                {step === "payment" && "Pay for Service"}
+                {step === "done" && "Payment Complete"}
               </DialogTitle>
             </DialogHeader>
             {step === "vehicle" && (
@@ -578,24 +586,122 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 </div>
 
                 <Button onClick={handleConfirmRide} size="lg" className="w-full" variant="emergency">
-                  Confirm Ride – ₹{calculateFare(selectedVehicle).toLocaleString()}
+                  Confirm Ride
+                </Button>
+                <p className="text-xs text-center text-muted-foreground">💳 Payment will be collected after service completion</p>
+              </div>
+            )}
+
+            {/* Step 4: Ride In Progress */}
+            {step === "booked" && selectedVehicle && (
+              <div className="text-center space-y-5 py-4">
+                <div className="w-20 h-20 mx-auto bg-primary/20 rounded-full flex items-center justify-center relative">
+                  <Truck className="w-10 h-10 text-primary" />
+                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-success flex items-center justify-center">
+                    <span className="w-2.5 h-2.5 rounded-full bg-success-foreground animate-pulse" />
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-foreground">Ride In Progress</h3>
+                  <p className="text-primary font-semibold mt-1">{selectedVehicle.name} is on the way!</p>
+                  <p className="text-muted-foreground text-sm mt-1">Driver: {selectedDriver?.name}</p>
+                </div>
+
+                <div className="bg-secondary rounded-xl p-4 text-left space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Vehicle</span>
+                    <span className="font-medium text-foreground">{selectedVehicle.name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Driver</span>
+                    <span className="font-medium text-foreground">{selectedDriver?.name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Distance</span>
+                    <span className="font-medium text-foreground">{distanceKm} km</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">ETA</span>
+                    <span className="font-medium text-foreground">{getDriverEta(selectedVehicle.id)}</span>
+                  </div>
+                  <div className="border-t border-border pt-2 flex justify-between font-bold">
+                    <span className="text-foreground">Estimated Fare</span>
+                    <span className="text-primary text-lg">₹{calculateFare(selectedVehicle).toLocaleString()}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-accent/30">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Phone className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-foreground">Contact Driver</p>
+                    <p className="text-xs text-muted-foreground">{selectedDriver?.phone}</p>
+                  </div>
+                </div>
+
+                <Button onClick={handleCompleteRide} size="lg" className="w-full bg-success hover:bg-success/90 text-success-foreground">
+                  ✅ Mark Ride as Completed
                 </Button>
               </div>
             )}
 
-            {/* Step 4: Payment */}
+            {/* Step 5: Ride Complete - Show fare summary */}
+            {step === "complete" && selectedVehicle && (
+              <div className="text-center space-y-5 py-4">
+                <div className="w-20 h-20 mx-auto bg-success/20 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-10 h-10 text-success" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-foreground">Ride Completed!</h3>
+                  <p className="text-muted-foreground text-sm mt-1">Please pay the fare to complete your booking</p>
+                </div>
+
+                <div className="bg-secondary rounded-xl p-4 text-left space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Vehicle</span>
+                    <span className="font-medium text-foreground">{selectedVehicle.name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Driver</span>
+                    <span className="font-medium text-foreground">{selectedDriver?.name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Distance</span>
+                    <span className="font-medium text-foreground">{distanceKm} km</span>
+                  </div>
+                  {selectedVehicle.baseFare > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Base fare</span>
+                      <span className="text-foreground">₹{selectedVehicle.baseFare.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div className="border-t border-border pt-2 flex justify-between font-bold text-lg">
+                    <span className="text-foreground">Total Fare</span>
+                    <span className="text-primary">₹{calculateFare(selectedVehicle).toLocaleString()}</span>
+                  </div>
+                </div>
+
+                <Button onClick={() => setStep("payment")} size="lg" className="w-full" variant="emergency">
+                  Proceed to Payment – ₹{calculateFare(selectedVehicle).toLocaleString()}
+                </Button>
+              </div>
+            )}
+
+            {/* Step 6: Payment */}
             {step === "payment" && selectedVehicle && (
               <div className="space-y-4">
                 <div className="bg-secondary p-4 rounded-xl text-center">
                   <p className="text-sm text-muted-foreground">Amount to Pay</p>
                   <p className="text-3xl font-bold text-foreground">₹{calculateFare(selectedVehicle).toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground mt-1">for {distanceKm} km ride</p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
                   {([
                     { key: "upi" as const, label: "UPI", icon: <Smartphone className="w-5 h-5" />, sub: "GPay, PhonePe" },
                     { key: "card" as const, label: "Card", icon: <CreditCard className="w-5 h-5" />, sub: "Credit/Debit" },
-                    { key: "cash" as const, label: "Cash", icon: <span className="text-lg">💵</span>, sub: "Pay after ride" },
+                    { key: "cash" as const, label: "Cash", icon: <span className="text-lg">💵</span>, sub: "Pay to driver" },
                   ]).map((pm) => (
                     <button
                       key={pm.key}
@@ -614,25 +720,24 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 )}
                 {paymentMethod === "cash" && (
                   <p className="text-sm text-muted-foreground bg-accent/10 p-3 rounded-lg">
-                    💰 Pay the driver in cash after the ride is completed.
+                    💰 Pay ₹{calculateFare(selectedVehicle).toLocaleString()} to the driver directly.
                   </p>
                 )}
                 <Button onClick={handlePayment} size="lg" className="w-full">
-                  {paymentMethod === "cash" ? "Confirm Ride" : "Pay & Confirm"}
+                  {paymentMethod === "cash" ? "Confirm Cash Payment" : `Pay ₹${calculateFare(selectedVehicle).toLocaleString()}`}
                 </Button>
               </div>
             )}
 
-            {/* Step 5: Booked */}
-            {step === "booked" && selectedVehicle && (
+            {/* Step 7: Done */}
+            {step === "done" && selectedVehicle && (
               <div className="text-center space-y-5 py-4">
                 <div className="w-20 h-20 mx-auto bg-success/20 rounded-full flex items-center justify-center">
                   <CheckCircle className="w-10 h-10 text-success" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-foreground">Booking Confirmed!</h3>
-                  <p className="text-primary font-semibold text-lg mt-1">Our team will contact you soon</p>
-                  <p className="text-muted-foreground text-sm mt-1">We are assigning the nearest {selectedVehicle.name} to you</p>
+                  <h3 className="text-xl font-bold text-foreground">Payment Complete!</h3>
+                  <p className="text-muted-foreground text-sm mt-1">Thank you for choosing mASSI</p>
                 </div>
 
                 <div className="bg-secondary rounded-xl p-4 text-left space-y-2">
@@ -645,26 +750,12 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                     <span className="font-medium text-foreground">{distanceKm} km</span>
                   </div>
                   <div className="border-t border-border pt-2 flex justify-between font-bold">
-                    <span className="text-foreground">Total Fare</span>
-                    <span className="text-primary text-lg">₹{calculateFare(selectedVehicle).toLocaleString()}</span>
+                    <span className="text-foreground">Paid</span>
+                    <span className="text-success text-lg">₹{calculateFare(selectedVehicle).toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Payment</span>
+                    <span className="text-muted-foreground">Payment Method</span>
                     <span className="font-medium text-foreground capitalize">{paymentMethod}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Location</span>
-                    <span className="font-medium text-foreground text-right text-xs max-w-[200px] truncate">{userAddress}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-accent/30">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                    <Phone className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-foreground">Our team will contact you soon</p>
-                    <p className="text-xs text-muted-foreground">You'll receive a call with driver details</p>
                   </div>
                 </div>
 
