@@ -1,4 +1,4 @@
-import { Ambulance, Phone, Menu, X, User, LogOut, Building2 } from "lucide-react";
+import { Phone, Menu, X, User, LogOut, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
