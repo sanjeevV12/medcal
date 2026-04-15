@@ -48,7 +48,7 @@ const haversineDistance = (lat1: number, lng1: number, lat2: number, lng2: numbe
 };
 
 const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProps) => {
-  const [step, setStep] = useState<"vehicle" | "drivers" | "confirm" | "payment" | "booked">("vehicle");
+  const [step, setStep] = useState<"vehicle" | "drivers" | "confirm" | "booked" | "complete" | "payment" | "done">("vehicle");
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleType | null>(null);
   const [distanceKm, setDistanceKm] = useState(5);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("upi");
