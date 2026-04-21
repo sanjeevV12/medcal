@@ -13,7 +13,7 @@ const Footer = () => {
               <span className="text-xl font-bold">mASSI</span>
             </div>
             <p className="text-background/70 mb-6">
-              Emergency medical assistance within 12 minutes. Because every second counts in saving lives.
+              Emergency medical assistance within 10 minutes. Because every second counts in saving lives.
             </p>
             <div className="flex gap-4">
               <a href="#" className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-background/20 transition-colors">

@@ -10,7 +10,7 @@ const pricingPlans = [
     period: "starting price",
     description: "Complete emergency care with ambulance & hospital treatment",
     features: [
-      "12-minute response guarantee",
+      "10-minute response guarantee",
       "GPS-enabled ambulance tracking",
       "Trained paramedics",
       "Hospital admission assistance",

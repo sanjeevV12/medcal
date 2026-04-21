@@ -5,7 +5,7 @@ const testimonials = [
     name: "Dr. Priya Sharma",
     role: "Emergency Physician",
     image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face",
-    quote: "mASSI has revolutionized emergency response. The 12-minute guarantee saves countless lives. I've seen patients arrive stabilized because treatment began in the ambulance.",
+    quote: "mASSI has revolutionized emergency response. The 10-minute guarantee saves countless lives. I've seen patients arrive stabilized because treatment began in the ambulance.",
     rating: 5,
     category: "doctor"
   },
@@ -74,7 +74,7 @@ const TestimonialsSection = () => {
             Heroes & Lives Saved
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Real stories from doctors, drivers, team members, and patients whose lives have been touched by mASSI's 12-minute promise.
+            Real stories from doctors, drivers, team members, and patients whose lives have been touched by mASSI's 10-minute promise.
           </p>
         </div>
 

@@ -7,14 +7,14 @@ const services = [
   {
     title: "Basic Care",
     subtitle: "Minor Injuries",
-    price: "₹499",
+    price: "₹199",
     description: "For non-critical accidents and minor injuries",
     features: [
       "Nearby medical shop response",
       "First aid treatment",
       "Basic medication",
       "Wound dressing",
-      "Response within 12 minutes",
+      "Response within 10 minutes",
     ],
     icon: Store,
     popular: false,
