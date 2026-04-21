@@ -317,9 +317,15 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     sendTelegramNotification(msg);
   };
 
+  const [bookingRecordId, setBookingRecordId] = useState<string | null>(null);
+
   const handleConfirmRide = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (user && selectedVehicle) {
+    if (!user) {
+      toast({ title: "Please sign in to confirm booking", variant: "destructive" });
+      return;
+    }
+    if (selectedVehicle) {
       await supabase.from("ride_requests").insert({
         user_id: user.id,
         pickup_lat: userCoords.lat,
@@ -327,26 +333,43 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
         ride_type: selectedVehicle.id,
         fare_estimate: calculateFare(selectedVehicle),
         distance_km: distanceKm,
-        payment_method: "pending",
+        payment_method: "cash_on_completion",
         payment_status: "pending",
         status: "confirmed",
       });
+
+      // Save to booking_records for dashboard visibility
+      const { data: bookingData } = await supabase.from("booking_records").insert({
+        user_id: user.id,
+        service_type: `Ambulance - ${selectedVehicle.name}`,
+        booking_date: new Date().toISOString().split('T')[0],
+        booking_time: new Date().toLocaleTimeString(),
+        status: "in_progress",
+        payment_method: "Pay after ride",
+        amount: `₹${calculateFare(selectedVehicle).toLocaleString()}`,
+        address: userAddress,
+        notes: `Driver: ${selectedDriver?.name || 'Auto-assigned'} | Vehicle: ${selectedDriver?.plate || 'N/A'} | Distance: ${distanceKm} km`,
+      }).select().single();
+
+      if (bookingData) setBookingRecordId(bookingData.id);
     }
     sendTelegramBookingNotification(selectedDriver?.phone || "");
     setStep("booked");
-    toast({ title: "🚑 Ride Confirmed!", description: `Your ${selectedVehicle?.name} is on the way!` });
+    toast({ title: "🚑 Ride Confirmed!", description: `Your ${selectedVehicle?.name} is on the way! Pay after the ride.` });
   };
 
-  const handleCompleteRide = () => setStep("complete");
-
-  const handlePayment = async () => {
-    if (paymentMethod === "upi" && !upiId) {
-      toast({ title: "Enter UPI ID", variant: "destructive" });
-      return;
+  const handleCompleteRide = async () => {
+    if (bookingRecordId && selectedVehicle) {
+      await supabase.from("booking_records").update({
+        status: "completed",
+      }).eq("id", bookingRecordId);
     }
+    setPaymentMethod("cash");
     setStep("done");
-    toast({ title: "✅ Payment Successful!", description: `₹${selectedVehicle ? calculateFare(selectedVehicle).toLocaleString() : 0} paid via ${paymentMethod}` });
+    toast({ title: "✅ Ride Completed!", description: `Please pay ₹${selectedVehicle ? calculateFare(selectedVehicle).toLocaleString() : 0} to the driver in cash.` });
   };
+
+  const handlePayment = handleCompleteRide;
 
   return (
     <>
