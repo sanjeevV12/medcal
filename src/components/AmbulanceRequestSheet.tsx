@@ -514,9 +514,23 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                       <p className="font-medium">🚑 Driver is on the way</p>
                       <p className="text-muted-foreground mt-1">You'll receive a notification once assigned. Our team is dispatching the nearest available driver.</p>
                     </div>
-                    <Button onClick={() => {
+                    <Button onClick={async () => {
+                      const { data: { user } } = await supabase.auth.getUser();
+                      if (user && selectedVehicle) {
+                        await supabase.from("booking_records").insert({
+                          user_id: user.id,
+                          service_type: `Ambulance - ${selectedVehicle.name}`,
+                          booking_date: new Date().toISOString().split('T')[0],
+                          booking_time: new Date().toLocaleTimeString(),
+                          status: "pending",
+                          payment_method: "Pay after ride",
+                          amount: `₹${calculateFare(selectedVehicle).toLocaleString()}`,
+                          address: userAddress,
+                          notes: `Auto-dispatch | Distance: ${distanceKm} km`,
+                        });
+                      }
                       sendTelegramBookingNotification("auto-dispatch");
-                      toast({ title: "🚑 Booking Confirmed!", description: "A driver will be assigned shortly. You'll be notified." });
+                      toast({ title: "🚑 Booking Confirmed!", description: "A driver will be assigned shortly. Pay after the ride." });
                       onOpenChange(false);
                     }} className="w-full">
                       Confirm Booking
