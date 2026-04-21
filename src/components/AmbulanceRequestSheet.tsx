@@ -593,13 +593,33 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-success/10">
-                  <Clock className="w-5 h-5 text-success" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Estimated arrival: {getDriverEta(selectedVehicle.id)}</p>
-                    <p className="text-xs text-muted-foreground">Driver: {selectedDriver?.name}</p>
+                {selectedDriver && (
+                  <div className="rounded-xl border border-success/30 bg-success/5 p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="relative flex h-2.5 w-2.5">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
+                          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-success" />
+                        </span>
+                        <span className="text-xs font-semibold uppercase tracking-wide text-success">Driver Available</span>
+                      </div>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-success/15 text-success font-medium">Online now</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-full bg-primary/15 flex items-center justify-center text-primary font-bold">
+                        {selectedDriver.name.charAt(0)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-foreground truncate">{selectedDriver.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{selectedDriver.plate} • {selectedDriver.phone}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 pt-1 border-t border-success/20">
+                      <Clock className="w-4 h-4 text-success" />
+                      <p className="text-sm font-medium text-foreground">Estimated arrival: {getDriverEta(selectedVehicle.id)}</p>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <Button onClick={handleConfirmRide} size="lg" className="w-full" variant="emergency">
                   Confirm Ride
