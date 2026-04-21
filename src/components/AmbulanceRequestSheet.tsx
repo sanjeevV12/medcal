@@ -700,8 +700,9 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
                 </div>
 
                 <Button onClick={handleCompleteRide} size="lg" className="w-full bg-success hover:bg-success/90 text-success-foreground">
-                  ✅ Mark Ride as Completed
+                  ✅ Mark Ride Completed & Pay Cash
                 </Button>
+                <p className="text-xs text-center text-muted-foreground">💵 Pay ₹{calculateFare(selectedVehicle).toLocaleString()} directly to the driver</p>
               </div>
             )}
 
