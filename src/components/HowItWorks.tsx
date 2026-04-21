@@ -16,7 +16,7 @@ const steps = [
   {
     icon: Hospital,
     title: "Hospital Arrival",
-    description: "Patient reaches the nearest hospital and treatment begins within 12 minutes.",
+    description: "Patient reaches the nearest hospital and treatment begins within 10 minutes.",
     color: "bg-success/10 text-success",
   },
 ];
@@ -28,7 +28,7 @@ const HowItWorks = () => {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent mb-4">
             <Clock className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">12-Minute Promise</span>
+            <span className="text-sm font-medium text-primary">10-Minute Promise</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             How mASSI Works

@@ -15,7 +15,7 @@ const HeroSection = () => {
           <div className="text-center lg:text-left animate-slide-up">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 mb-6">
               <Clock className="w-4 h-4 text-primary-foreground" />
-              <span className="text-sm font-medium text-primary-foreground">Response within 12 minutes</span>
+              <span className="text-sm font-medium text-primary-foreground">Response within 10 minutes</span>
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 leading-tight">
@@ -25,8 +25,8 @@ const HeroSection = () => {
             </h1>
 
             <p className="text-lg text-primary-foreground/80 mb-8 max-w-xl mx-auto lg:mx-0">
-              mASSI detects accident locations instantly and delivers emergency medical care within 12 minutes. 
-              From first aid at ₹499 to full ambulance service – we've got you covered.
+              mASSI detects accident locations instantly and delivers emergency medical care within 10 minutes. 
+              From first aid at ₹199 to full ambulance service – we've got you covered.
             </p>
 
             <div className="flex justify-center lg:justify-start">
@@ -43,7 +43,7 @@ const HeroSection = () => {
 
             <div className="flex items-center gap-8 mt-10 justify-center lg:justify-start">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-foreground">12</div>
+                <div className="text-3xl font-bold text-primary-foreground">10</div>
                 <div className="text-sm text-primary-foreground/70">Min Response</div>
               </div>
               <div className="w-px h-12 bg-primary-foreground/20" />

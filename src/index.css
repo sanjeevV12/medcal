@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 200 50% 10%;
 
-    --primary: 4 80% 52%;
+    --primary: 187 85% 38%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 200 20% 94%;
@@ -24,13 +24,13 @@
     --muted: 200 15% 92%;
     --muted-foreground: 200 15% 45%;
 
-    --accent: 4 60% 95%;
-    --accent-foreground: 4 72% 30%;
+    --accent: 162 70% 92%;
+    --accent-foreground: 162 75% 25%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --emergency: 4 90% 58%;
+    --emergency: 0 84% 55%;
     --emergency-foreground: 0 0% 100%;
 
     --success: 152 69% 40%;
@@ -41,17 +41,17 @@
 
     --border: 200 20% 88%;
     --input: 200 20% 88%;
-    --ring: 4 80% 52%;
+    --ring: 187 85% 38%;
 
     --radius: 0.75rem;
 
-    --gradient-hero: linear-gradient(135deg, hsl(4 80% 52%) 0%, hsl(0 70% 45%) 100%);
-    --gradient-emergency: linear-gradient(135deg, hsl(4 90% 58%) 0%, hsl(15 85% 55%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(187 85% 38%) 0%, hsl(200 90% 30%) 100%);
+    --gradient-emergency: linear-gradient(135deg, hsl(0 84% 55%) 0%, hsl(15 85% 55%) 100%);
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(200 20% 98%) 100%);
 
     --shadow-soft: 0 4px 20px -4px hsl(200 50% 10% / 0.1);
     --shadow-card: 0 8px 30px -10px hsl(200 50% 10% / 0.15);
-    --shadow-emergency: 0 8px 30px -5px hsl(4 90% 58% / 0.4);
+    --shadow-emergency: 0 8px 30px -5px hsl(0 84% 55% / 0.4);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -73,7 +73,7 @@
     --popover: 200 40% 10%;
     --popover-foreground: 200 20% 95%;
 
-    --primary: 4 75% 50%;
+    --primary: 187 80% 45%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 200 30% 15%;
@@ -82,20 +82,20 @@
     --muted: 200 30% 18%;
     --muted-foreground: 200 15% 60%;
 
-    --accent: 4 50% 15%;
-    --accent-foreground: 4 65% 60%;
+    --accent: 162 50% 18%;
+    --accent-foreground: 162 65% 60%;
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --emergency: 4 85% 55%;
+    --emergency: 0 80% 55%;
     --emergency-foreground: 0 0% 100%;
 
     --border: 200 30% 20%;
     --input: 200 30% 20%;
-    --ring: 4 75% 50%;
+    --ring: 187 80% 45%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(4 75% 45%) 0%, hsl(0 60% 38%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(187 80% 35%) 0%, hsl(200 85% 25%) 100%);
   }
 }
 
