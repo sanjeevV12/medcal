@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import QuickActionBar from "@/components/QuickActionBar";
 import ChatSupportWidget from "@/components/ChatSupportWidget";
@@ -20,6 +23,17 @@ import DriverRegistration from "@/components/DriverRegistration";
 const Index = () => {
   const [emergencyOverlayOpen, setEmergencyOverlayOpen] = useState(false);
   const [ambulanceSheetOpen, setAmbulanceSheetOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const requireAuth = (action: () => void) => {
+    if (!user) {
+      toast({ title: "Please sign in", description: "Login required to book healthcare services" });
+      navigate("/auth");
+      return;
+    }
+    action();
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,13 +65,13 @@ const Index = () => {
         onClose={() => setEmergencyOverlayOpen(false)} 
       />
 
-      {/* Hidden buttons for hero section triggers */}
-      <button id="emergency-alert-btn" className="hidden" onClick={() => setEmergencyOverlayOpen(true)} />
-      <button id="basic-care-btn" className="hidden" onClick={() => {
+      {/* Hidden buttons for hero section triggers — gated by auth */}
+      <button id="emergency-alert-btn" className="hidden" onClick={() => requireAuth(() => setEmergencyOverlayOpen(true))} />
+      <button id="basic-care-btn" className="hidden" onClick={() => requireAuth(() => {
         const event = new CustomEvent('open-basic-care');
         window.dispatchEvent(event);
-      }} />
-      <button id="request-ambulance-btn" className="hidden" onClick={() => setAmbulanceSheetOpen(true)} />
+      })} />
+      <button id="request-ambulance-btn" className="hidden" onClick={() => requireAuth(() => setAmbulanceSheetOpen(true))} />
 
       <ChatSupportWidget />
     </div>
