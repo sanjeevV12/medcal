@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import RideTrackingView from "./RideTrackingView";
 import { sendTelegramNotification } from "@/lib/telegram";
+import { openWhatsApp } from "@/lib/whatsapp";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 

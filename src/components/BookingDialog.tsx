@@ -10,6 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { sendNotification } from "@/hooks/useNotifications";
 import { sendTelegramNotification } from "@/lib/telegram";
+import { openWhatsApp } from "@/lib/whatsapp";
 
 interface BookingDialogProps {
   children: React.ReactNode;
