@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserPlus, Truck, Phone, CreditCard, CheckCircle } from "lucide-react";
+import { UserPlus, Truck, Phone, CreditCard, CheckCircle, MessageCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { sendTelegramNotification } from "@/lib/telegram";
+import { buildWhatsAppLink, openWhatsApp } from "@/lib/whatsapp";
 
 const vehicleOptions = [
   { value: "medi-bike", label: "Medi-Bike" },
@@ -18,6 +19,7 @@ const vehicleOptions = [
 
 const DriverRegistration = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [waMessage, setWaMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     full_name: "",
@@ -57,6 +59,10 @@ const DriverRegistration = () => {
       const adminMsg = `🚑 <b>New Driver Registered!</b>\n\n👤 Name: ${form.full_name}\n📞 Phone: ${form.phone}\n💬 WhatsApp: ${form.whatsapp_number}\n🚗 Vehicle: ${form.vehicle_type}\n🔢 Vehicle No: ${form.vehicle_number}\n🪪 License: ${form.license_number}\n📅 Experience: ${form.experience_years || 0} years`;
       sendTelegramNotification(adminMsg);
 
+      // Forward the same details to the admin WhatsApp
+      setWaMessage(adminMsg);
+      openWhatsApp(adminMsg);
+
       setSubmitted(true);
       toast({ title: "✅ Registration Successful!", description: "You are now registered as a driver partner." });
     } catch (err: any) {
@@ -75,9 +81,16 @@ const DriverRegistration = () => {
           </div>
           <h2 className="text-2xl font-bold text-foreground mb-2">Registration Complete!</h2>
           <p className="text-muted-foreground">You'll receive ride requests on your WhatsApp. Stay available!</p>
-          <Button className="mt-6" onClick={() => { setSubmitted(false); setForm({ full_name: "", phone: "", whatsapp_number: "", vehicle_type: "bls", vehicle_number: "", license_number: "", experience_years: "" }); }}>
-            Register Another Driver
-          </Button>
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+            <Button asChild variant="outline">
+              <a href={buildWhatsAppLink(waMessage)} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="w-4 h-4 mr-2" /> Send details on WhatsApp
+              </a>
+            </Button>
+            <Button onClick={() => { setSubmitted(false); setWaMessage(""); setForm({ full_name: "", phone: "", whatsapp_number: "", vehicle_type: "bls", vehicle_number: "", license_number: "", experience_years: "" }); }}>
+              Register Another Driver
+            </Button>
+          </div>
         </div>
       </section>
     );

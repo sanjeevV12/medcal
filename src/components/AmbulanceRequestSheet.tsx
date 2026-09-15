@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import RideTrackingView from "./RideTrackingView";
 import { sendTelegramNotification } from "@/lib/telegram";
+import { openWhatsApp } from "@/lib/whatsapp";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -315,6 +316,8 @@ const AmbulanceRequestSheet = ({ open, onOpenChange }: AmbulanceRequestSheetProp
     const fare = calculateFare(selectedVehicle);
     const msg = `🚑 <b>New Ambulance Booking!</b>\n\n📍 Location: ${userAddress}\n📏 Distance: ${distanceKm} km\n🚗 Vehicle: ${selectedVehicle.name}\n💰 Total Fare: ₹${fare.toLocaleString()}\n👤 Driver: ${selectedDriver?.name || "N/A"}\n🔢 Plate: ${selectedDriver?.plate || "N/A"}\n📞 Driver Phone: ${driverPhone}\n💳 Payment: Pay after service`;
     sendTelegramNotification(msg);
+    // Forward the same booking details to the admin WhatsApp
+    openWhatsApp(msg);
   };
 
   const [bookingRecordId, setBookingRecordId] = useState<string | null>(null);
