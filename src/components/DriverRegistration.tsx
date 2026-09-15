@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserPlus, Truck, Phone, CreditCard, CheckCircle } from "lucide-react";
+import { UserPlus, Truck, Phone, CreditCard, CheckCircle, MessageCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { sendTelegramNotification } from "@/lib/telegram";
+import { buildWhatsAppLink, openWhatsApp } from "@/lib/whatsapp";
 
 const vehicleOptions = [
   { value: "medi-bike", label: "Medi-Bike" },
