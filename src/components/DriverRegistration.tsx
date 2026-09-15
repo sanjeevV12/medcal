@@ -19,6 +19,7 @@ const vehicleOptions = [
 
 const DriverRegistration = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [waMessage, setWaMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     full_name: "",
