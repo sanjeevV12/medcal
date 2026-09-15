@@ -59,6 +59,10 @@ const DriverRegistration = () => {
       const adminMsg = `🚑 <b>New Driver Registered!</b>\n\n👤 Name: ${form.full_name}\n📞 Phone: ${form.phone}\n💬 WhatsApp: ${form.whatsapp_number}\n🚗 Vehicle: ${form.vehicle_type}\n🔢 Vehicle No: ${form.vehicle_number}\n🪪 License: ${form.license_number}\n📅 Experience: ${form.experience_years || 0} years`;
       sendTelegramNotification(adminMsg);
 
+      // Forward the same details to the admin WhatsApp
+      setWaMessage(adminMsg);
+      openWhatsApp(adminMsg);
+
       setSubmitted(true);
       toast({ title: "✅ Registration Successful!", description: "You are now registered as a driver partner." });
     } catch (err: any) {
