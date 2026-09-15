@@ -81,9 +81,16 @@ const DriverRegistration = () => {
           </div>
           <h2 className="text-2xl font-bold text-foreground mb-2">Registration Complete!</h2>
           <p className="text-muted-foreground">You'll receive ride requests on your WhatsApp. Stay available!</p>
-          <Button className="mt-6" onClick={() => { setSubmitted(false); setForm({ full_name: "", phone: "", whatsapp_number: "", vehicle_type: "bls", vehicle_number: "", license_number: "", experience_years: "" }); }}>
-            Register Another Driver
-          </Button>
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+            <Button asChild variant="outline">
+              <a href={buildWhatsAppLink(waMessage)} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="w-4 h-4 mr-2" /> Send details on WhatsApp
+              </a>
+            </Button>
+            <Button onClick={() => { setSubmitted(false); setWaMessage(""); setForm({ full_name: "", phone: "", whatsapp_number: "", vehicle_type: "bls", vehicle_number: "", license_number: "", experience_years: "" }); }}>
+              Register Another Driver
+            </Button>
+          </div>
         </div>
       </section>
     );
