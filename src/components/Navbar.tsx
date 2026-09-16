@@ -113,6 +113,11 @@ const Navbar = () => {
                   <Link to="/dashboard" className="text-primary font-medium">
                     My Dashboard
                   </Link>
+                  {isAdmin && (
+                    <Link to="/admin" className="text-primary font-medium">
+                      Admin settings
+                    </Link>
+                  )}
                   <button onClick={handleSignOut} className="text-left text-muted-foreground">
                     Logout
                   </button>
