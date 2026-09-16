@@ -88,8 +88,7 @@ const Footer = () => {
                 <span className="font-bold text-lg">mASSI Prime</span>
               </div>
               <div className="mb-3">
-                <span className="text-3xl font-bold text-primary">₹249</span>
-                <span className="text-background/70 text-sm">/person/month</span>
+                <span className="text-background/80 text-sm">Membership benefits</span>
               </div>
               <ul className="space-y-2 text-sm text-background/80 mb-4">
                 <li className="flex items-center gap-2">
