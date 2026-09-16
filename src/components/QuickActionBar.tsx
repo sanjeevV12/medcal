@@ -67,10 +67,10 @@ const QuickActionBar = ({ onEmergencyAlert }: QuickActionBarProps) => {
               size="default"
               className="flex-1 max-w-[180px] sm:max-w-xs gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4"
               onClick={handleBasicCare}
-              aria-label="Get basic medical care for ₹199"
+              aria-label="Get basic medical care, starting at ₹499"
             >
               <Stethoscope className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="truncate">Get Basic Care · ₹199</span>
+              <span className="truncate">Get Basic Care</span>
             </Button>
           </div>
         </div>
