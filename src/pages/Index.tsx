@@ -8,16 +8,11 @@ import ChatSupportWidget from "@/components/ChatSupportWidget";
 import EmergencyTrackingOverlay from "@/components/EmergencyTrackingOverlay";
 import HeroSection from "@/components/HeroSection";
 import HowItWorks from "@/components/HowItWorks";
-import TrackingSection from "@/components/TrackingSection";
-import LiveTrackingMap from "@/components/LiveTrackingMap";
 import ServicesSection from "@/components/ServicesSection";
-import PricingSection from "@/components/PricingSection";
-import AdditionalServices from "@/components/AdditionalServices";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import StatsSection from "@/components/StatsSection";
 import Footer from "@/components/Footer";
 import AmbulanceRequestSheet from "@/components/AmbulanceRequestSheet";
-import AIDoctorSection from "@/components/AIDoctorSection";
 import DriverRegistration from "@/components/DriverRegistration";
 
 const Index = () => {
@@ -46,13 +41,8 @@ const Index = () => {
 
 
         <HowItWorks />
-        <TrackingSection />
-        <LiveTrackingMap />
         <ServicesSection />
-        <AIDoctorSection />
         <DriverRegistration />
-        <PricingSection />
-        <AdditionalServices />
         <TestimonialsSection />
         <StatsSection />
         <Footer />

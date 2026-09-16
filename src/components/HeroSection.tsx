@@ -25,8 +25,8 @@ const HeroSection = () => {
             </h1>
 
             <p className="text-lg text-primary-foreground/80 mb-8 max-w-xl mx-auto lg:mx-0">
-              mASSI detects accident locations instantly and delivers emergency medical care within 10 minutes. 
-              From first aid at ₹199 to full ambulance service – we've got you covered.
+              mASSI detects accident locations instantly and delivers emergency medical care within 10 minutes.
+              From on-the-spot first aid to full ambulance service – we've got you covered.
             </p>
 
             <div className="flex justify-center lg:justify-start">
@@ -48,8 +48,8 @@ const HeroSection = () => {
               </div>
               <div className="w-px h-12 bg-primary-foreground/20" />
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-foreground">₹199</div>
-                <div className="text-sm text-primary-foreground/70">First Aid</div>
+                <div className="text-3xl font-bold text-primary-foreground">18+</div>
+                <div className="text-sm text-primary-foreground/70">Partner Hospitals</div>
               </div>
               <div className="w-px h-12 bg-primary-foreground/20" />
               <div className="text-center">

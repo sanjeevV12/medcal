@@ -1,12 +1,14 @@
-import { Phone, Menu, X, User, LogOut, Building2 } from "lucide-react";
+import { Phone, Menu, X, User, LogOut, Building2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -52,6 +54,14 @@ const Navbar = () => {
             
             {user ? (
               <>
+                {isAdmin && (
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/admin">
+                      <ShieldCheck className="w-4 h-4 mr-2" />
+                      Admin
+                    </Link>
+                  </Button>
+                )}
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/dashboard">
                     <User className="w-4 h-4 mr-2" />
@@ -103,6 +113,11 @@ const Navbar = () => {
                   <Link to="/dashboard" className="text-primary font-medium">
                     My Dashboard
                   </Link>
+                  {isAdmin && (
+                    <Link to="/admin" className="text-primary font-medium">
+                      Admin settings
+                    </Link>
+                  )}
                   <button onClick={handleSignOut} className="text-left text-muted-foreground">
                     Logout
                   </button>
