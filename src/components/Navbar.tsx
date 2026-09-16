@@ -54,6 +54,14 @@ const Navbar = () => {
             
             {user ? (
               <>
+                {isAdmin && (
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/admin">
+                      <ShieldCheck className="w-4 h-4 mr-2" />
+                      Admin
+                    </Link>
+                  </Button>
+                )}
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/dashboard">
                     <User className="w-4 h-4 mr-2" />
