@@ -7,7 +7,7 @@ const services = [
   {
     title: "Basic Care",
     subtitle: "Minor Injuries",
-    price: "₹199",
+    price: "Starting ₹499",
     description: "For non-critical accidents and minor injuries",
     features: [
       "Nearby medical shop response",
@@ -23,7 +23,7 @@ const services = [
   {
     title: "Emergency Care",
     subtitle: "Critical Conditions",
-    price: "₹3,897",
+    price: "",
     description: "For serious accidents requiring hospitalization",
     features: [
       "Ambulance dispatch",
