@@ -46,10 +46,10 @@ const ServicesSection = () => {
     if (!isPopular) {
       setBasicCareOpen(true);
     } else {
-      // Scroll to live tracking section for emergency ambulance
-      document.getElementById('live-tracking')?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('request-ambulance-btn')?.click();
     }
   };
+
 
   return (
     <section id="services" className="py-20 bg-secondary/30">
@@ -85,12 +85,13 @@ const ServicesSection = () => {
                   <h3 className="text-2xl font-bold text-foreground">{service.title}</h3>
                   <p className="text-muted-foreground">{service.subtitle}</p>
                 </div>
-                <div className="text-right">
-                  <div className={`text-3xl font-bold ${service.popular ? 'text-emergency' : 'text-primary'}`}>
-                    {service.price}
+                {service.price ? (
+                  <div className="text-right">
+                    <div className={`text-2xl font-bold ${service.popular ? 'text-emergency' : 'text-primary'}`}>
+                      {service.price}
+                    </div>
                   </div>
-                <p className="text-sm text-muted-foreground">starting price</p>
-                </div>
+                ) : null}
               </div>
 
               <p className="text-muted-foreground mb-6">{service.description}</p>
